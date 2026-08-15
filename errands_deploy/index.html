@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runners Errands — Runnerbot 3 Demo</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0A2A97">
+<meta name="apple-mobile-web-app-title" content="Runners">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cambria&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A2A97; --navy-dark: #071D6B; --green: #38E500; --green-deep: #219600;
+    --ink: #14161A; --muted: #767C88; --line: #ECEEF2; --amber: #9A5B13; --bg-soft: #FAFAFC;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: white; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); }
+  .display { font-family: 'Cambria', Georgia, serif; }
+  a { text-decoration: none; }
+
+  /* ================= SITE NAV ================= */
+  .site-nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 6vw; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); z-index: 50; }
+  .site-nav .brand-mark { display: flex; align-items: center; gap: 10px; }
+  .site-nav .brand-mark .logo-dot { height: 32px; display: flex; align-items: center; justify-content: center; }
+  .site-nav .brand-mark .logo-dot img { height: 30px; width: auto; display: block; }
+  .site-nav .brand-mark .name { font-weight: 800; font-size: 15px; color: var(--ink); white-space: nowrap; }
+  .site-nav .nav-links { display: flex; gap: 28px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+  .site-nav .nav-links a:hover { color: var(--navy); }
+  .site-nav .nav-cta { background: var(--navy); color: white; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; }
+
+  /* ================= HERO ================= */
+  .hero { max-width: 1180px; margin: 0 auto; padding: 70px 6vw 40px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 50px; align-items: center; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 7px; background: #EAF2ED; color: var(--green-deep); font-size: 11.5px; font-weight: 700; padding: 6px 13px; border-radius: 20px; margin-bottom: 22px; }
+  .hero-eyebrow .dot3 { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .hero h1 { font-family: 'Cambria', serif; font-size: clamp(34px, 4.4vw, 54px); line-height: 1.12; color: var(--ink); margin: 0 0 20px; font-weight: 600; }
+  .hero h1 .accent { color: var(--navy); }
+  .hero .sub { font-size: 17px; color: var(--muted); line-height: 1.6; max-width: 480px; margin-bottom: 30px; }
+  .hero-ctas { display: flex; gap: 12px; margin-bottom: 36px; position: relative; z-index: 2; }
+  .btn-primary { background: var(--navy); color: white; padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 14.5px; border: none; cursor: pointer; transition: transform 0.12s ease; }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-secondary { background: white; color: var(--ink); padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 14.5px; border: 1.5px solid var(--line); cursor: pointer; }
+  .hero-trust { display: flex; gap: 22px; flex-wrap: wrap; }
+  .hero-trust .ht-item { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .hero-trust .ht-item .dot3 { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .hero-visual { position: relative; display: flex; justify-content: center; pointer-events: none; }
+  .hero-visual .float-card { position: absolute; background: white; border: 1px solid var(--line); border-radius: 14px; padding: 12px 15px; box-shadow: 0 20px 45px rgba(20,22,26,0.1); font-size: 12px; }
+  .fc-1 { top: 6%; left: -8%; animation: floaty 5s ease-in-out infinite; }
+  .fc-2 { bottom: 10%; right: -10%; animation: floaty 5.5s ease-in-out infinite 0.4s; }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+  /* ================= SECTIONS ================= */
+  .site-section { max-width: 1180px; margin: 0 auto; padding: 80px 6vw; }
+  .site-section.tinted { background: var(--bg-soft); max-width: none; }
+  .site-section.tinted > .inner { max-width: 1180px; margin: 0 auto; padding: 0 6vw; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 50px; }
+  .section-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.6px; color: var(--green-deep); text-transform: uppercase; margin-bottom: 12px; }
+  .section-head h2 { font-family: 'Cambria', serif; font-size: clamp(26px, 3vw, 36px); color: var(--ink); margin: 0 0 12px; font-weight: 600; }
+  .section-head p { color: var(--muted); font-size: 15.5px; line-height: 1.6; }
+
+  /* How it works */
+  .flow-row { display: flex; align-items: flex-start; gap: 6px; overflow-x: auto; padding-bottom: 10px; }
+  .flow-step { flex: 1; min-width: 130px; text-align: center; }
+  .flow-step .fs-num { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'Cambria', serif; font-size: 16px; margin: 0 auto 12px; }
+  .flow-step .fs-label { font-weight: 700; font-size: 13.5px; color: var(--ink); margin-bottom: 5px; }
+  .flow-step .fs-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+  .flow-arrow { color: #C7CCDB; font-size: 16px; padding-top: 10px; flex-shrink: 0; }
+
+  /* Trust grid */
+  .trust-grid-site { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .trust-card-site { background: white; border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
+  .trust-card-site .tc-icon { font-size: 24px; margin-bottom: 14px; }
+  .trust-card-site h3 { font-size: 15.5px; margin: 0 0 8px; color: var(--ink); }
+  .trust-card-site p { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
+
+  /* Demo showcase section */
+  .demo-showcase { background: var(--navy-dark); padding: 90px 6vw; }
+  .demo-showcase .inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
+  .demo-showcase .section-head { text-align: left; margin: 0; max-width: none; }
+  .demo-showcase .section-eyebrow { color: var(--green); }
+  .demo-showcase .section-head h2 { color: white; }
+  .demo-showcase .section-head p { color: #AEB9E8; }
+  .demo-feature-list { margin-top: 26px; display: flex; flex-direction: column; gap: 16px; }
+  .demo-feature-list .df-item { display: flex; gap: 12px; align-items: flex-start; }
+  .demo-feature-list .df-dot { width: 22px; height: 22px; border-radius: 50%; background: rgba(56,229,0,0.15); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+  .demo-feature-list .df-text { color: #D6DDF5; font-size: 13.5px; line-height: 1.5; }
+  .phone-stage { display: flex; justify-content: center; }
+
+  /* Footer */
+  .site-footer { padding: 50px 6vw 30px; text-align: center; }
+  .site-footer .sf-brand { font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+  .site-footer .sf-line { font-size: 12.5px; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 40px; }
+    .hero-visual { order: -1; margin-bottom: 10px; }
+    .trust-grid-site { grid-template-columns: 1fr; }
+    .demo-showcase .inner { grid-template-columns: 1fr; }
+    .demo-showcase .section-head { text-align: center; }
+    .site-nav .nav-links { display: none; }
+    .float-card { display: none; }
+  }
+
+  .phone { width: 400px; max-width: 100%; background: white; border-radius: 36px; overflow: hidden; box-shadow: 0 30px 80px rgba(10,20,60,0.32); position: relative; height: 820px; display: flex; flex-direction: column; border: 1px solid #E8E9EE; }
+  .status-bar { background: white; font-size: 11px; padding: 10px 22px 2px; display: flex; justify-content: space-between; font-weight: 600; color: var(--ink); }
+  .app-header { padding: 6px 20px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+  .app-header .logo-dot { height: 32px; display: flex; align-items: center; justify-content: center; }
+  .app-header .logo-dot img { height: 28px; width: auto; display: block; }
+  .app-header .brand .name { font-weight: 800; font-size: 14.5px; color: var(--ink); white-space: nowrap; }
+  .app-header .brand .tag { font-size: 10px; color: var(--muted); }
+  .app-header .zone-pill { margin-left: auto; background: #EAF2ED; color: var(--green-deep); font-size: 9.5px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
+
+  .app-body { flex: 1; overflow-y: auto; background: white; }
+
+  /* ================= LANDING: CHAT-FIRST ================= */
+  .landing { padding: 26px 22px 14px; display: flex; flex-direction: column; height: 100%; }
+  .landing-greet { font-family: 'Cambria', serif; font-size: 25px; color: var(--ink); font-weight: 600; line-height: 1.25; margin-bottom: 6px; }
+  .landing-sub { font-size: 12.5px; color: var(--muted); margin-bottom: 22px; line-height: 1.55; }
+
+  .big-input-wrap { background: var(--bg-soft); border: 1.5px solid var(--line); border-radius: 20px; padding: 14px 14px 12px; margin-bottom: 18px; transition: border-color 0.15s ease; }
+  .big-input-wrap:focus-within { border-color: var(--green); }
+  .big-input { width: 100%; border: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 14.5px; color: var(--ink); resize: none; outline: none; min-height: 44px; }
+  .big-input::placeholder { color: #B7BBC4; }
+  .input-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .mic-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.12s ease; }
+  .mic-btn:hover { transform: scale(1.06); }
+  .mic-btn svg { width: 17px; height: 17px; }
+  .send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .send-btn svg { width: 16px; height: 16px; }
+
+  .examples-label { font-size: 10.5px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .autoplay-cta { display: flex; align-items: center; gap: 13px; background: linear-gradient(135deg, var(--navy), #142F9E); border-radius: 16px; padding: 15px 17px; margin-bottom: 20px; cursor: pointer; transition: transform 0.12s ease; }
+  .autoplay-cta:hover { transform: translateY(-1px); }
+  .autoplay-cta .ap-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: var(--navy-dark); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .autoplay-cta .ap-title { color: white; font-weight: 700; font-size: 13.5px; }
+  .autoplay-cta .ap-sub { color: #AEB9E8; font-size: 11px; margin-top: 1px; }
+  .investor-link { text-align: center; font-size: 11.5px; color: var(--navy); font-weight: 600; cursor: pointer; margin-bottom: 22px; }
+  .investor-link:hover { text-decoration: underline; }
+  .examples-scroll { flex: 1; overflow-y: auto; }
+  .ex-chip { display: inline-block; background: white; border: 1.3px solid var(--line); border-radius: 14px; padding: 10px 13px; margin: 0 8px 8px 0; font-size: 12px; color: var(--ink); cursor: pointer; transition: all 0.13s ease; }
+  .ex-chip:hover { border-color: var(--green); background: #F5FCF2; }
+
+  /* ================= CHAT VIEW ================= */
+  .chat-view { display: none; flex-direction: column; height: 100%; }
+  .chat-view.open { display: flex; }
+  .chat-topbar { padding: 12px 18px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+  .chat-topbar .back { font-size: 20px; color: var(--navy); cursor: pointer; padding: 2px 6px; }
+  .chat-topbar .title { font-weight: 700; color: var(--ink); font-size: 14px; }
+  .chat-topbar .sub { font-size: 10px; color: var(--muted); }
+
+  .stage-track { display: flex; padding: 10px 18px 12px; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+  .stage-step { flex: 1; text-align: center; font-size: 8px; color: #C4C8D1; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; padding-top: 7px; border-top: 3px solid #EFF0F4; white-space: nowrap; min-width: 46px; }
+  .stage-step.active { color: var(--green-deep); border-top-color: var(--green); }
+  .stage-step.done { color: var(--navy); border-top-color: var(--navy); }
+
+  .lang-row { display: flex; gap: 5px; padding: 10px 18px 0; flex-wrap: wrap; }
+  .lang-btn { background: var(--bg-soft); color: var(--navy); border: 1px solid var(--line); border-radius: 14px; padding: 4px 10px; font-size: 10px; cursor: pointer; }
+  .lang-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .plain-toggle-row { display: flex; align-items: center; gap: 6px; padding: 8px 18px; font-size: 10px; color: var(--muted); }
+  .p-switch { width: 26px; height: 14px; background: #DADFE8; border-radius: 8px; position: relative; cursor: pointer; }
+  .p-switch .knob { width: 10px; height: 10px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.15s ease; }
+  .p-switch.on { background: var(--green); }
+  .p-switch.on .knob { left: 14px; }
+  .lang-draft-note { display: none; background: #FFF3E0; color: #7A5A12; font-size: 9px; padding: 6px 12px; margin: 0 18px 8px; border-radius: 8px; }
+  .lang-draft-note.show { display: block; }
+
+  .chat-scroll { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-soft); }
+  .msg { max-width: 84%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; }
+  .msg.bot { background: white; border: 1px solid var(--line); color: var(--ink); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.user { background: var(--navy); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg.typing { display: flex; gap: 4px; padding: 13px 15px; }
+  .msg.typing span { width: 5px; height: 5px; border-radius: 50%; background: #B7BBC4; display: inline-block; animation: bounce 1.2s infinite; }
+  .msg.typing span:nth-child(2) { animation-delay: 0.15s; }
+  .msg.typing span:nth-child(3) { animation-delay: 0.3s; }
+  .thinking-text { font-size: 11px; color: var(--muted); font-style: italic; padding: 2px 2px 0; align-self: flex-start; min-height: 15px; }
+
+  /* Entrance animation - applied to every dynamically-added card/message */
+  @keyframes riseIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .anim-in { animation: riseIn 0.32s ease both; }
+
+  /* Delight moment - distinct from the standard suggestion card */
+  .delight-card { background: linear-gradient(135deg, #F3FCEE, #EAFBE0); border: 1px solid #BFEBA8; border-radius: 14px; padding: 12px 14px; align-self: stretch; font-size: 12.5px; color: #1F5C0A; font-weight: 600; display: flex; align-items: center; gap: 9px; }
+
+  /* Runner card enrichment */
+  .runner-card { flex-wrap: wrap; }
+  .runner-avatar.illustrated { background: linear-gradient(135deg, var(--navy), #1840C4); position: relative; }
+  .runner-meta-row { display: flex; gap: 12px; margin-top: 3px; flex-wrap: wrap; }
+  .runner-meta-row .rm-item { font-size: 10.5px; color: var(--muted); display: flex; align-items: center; gap: 3px; }
+  .runner-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; animation: pulseDot 1.4s infinite; }
+  @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-3px); } }
+
+  /* Intelligent Suggestion */
+  .suggestion-card { background: #F5FCF2; border: 1px solid #CFEFC0; border-radius: 14px; padding: 11px 13px; align-self: stretch; display: flex; gap: 9px; }
+  .suggestion-card .sg-icon { font-size: 16px; flex-shrink: 0; }
+  .suggestion-card .sg-text { font-size: 12px; color: #1F5C0A; line-height: 1.5; }
+
+  /* AI Planning card (checklist + time + cost) */
+  .plan-card { background: white; border: 1.3px solid var(--line); border-radius: 16px; padding: 15px; align-self: stretch; }
+  .plan-card .pl-title { font-size: 10px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 9px; }
+  .plan-card .pl-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12.5px; color: var(--ink); }
+  .plan-card .pl-item .ck { width: 17px; height: 17px; border-radius: 50%; background: var(--green); color: white; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; }
+  .plan-card .pl-meta { display: flex; gap: 20px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .plan-card .pl-meta-item .k { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+  .plan-card .pl-meta-item .v { font-family: 'Cambria', serif; font-size: 16px; color: var(--navy); font-weight: 600; margin-top: 1px; }
+
+  /* Price card */
+  .price-card { background: white; border: 1.3px solid var(--green); border-radius: 16px; padding: 14px; align-self: stretch; }
+  .price-card .pc-title { font-size: 10px; font-weight: 700; color: var(--green-deep); text-transform: uppercase; margin-bottom: 8px; }
+  .price-card .pc-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 3px 0; color: var(--ink); }
+  .price-card .pc-total { font-weight: 700; color: var(--navy); font-size: 15px; padding-top: 7px; margin-top: 5px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; }
+  .price-card .pc-note { font-size: 9.5px; color: var(--muted); margin-top: 7px; font-style: italic; line-height: 1.4; }
+
+  /* Live Order Timeline */
+  .timeline-card { background: white; border: 1.3px solid var(--line); border-radius: 16px; padding: 15px; align-self: stretch; }
+  .timeline-card .tl-title { font-size: 10px; font-weight: 700; color: var(--navy); text-transform: uppercase; margin-bottom: 12px; }
+  .tl-row { display: flex; gap: 10px; padding-bottom: 14px; position: relative; }
+  .tl-row:last-child { padding-bottom: 0; }
+  .tl-row:not(:last-child)::before { content: ''; position: absolute; left: 8px; top: 20px; bottom: -4px; width: 2px; background: var(--line); }
+  .tl-row.done:not(:last-child)::before { background: var(--green); }
+  .tl-dot { width: 17px; height: 17px; border-radius: 50%; background: var(--line); flex-shrink: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
+  .tl-row.done .tl-dot { background: var(--green); }
+  .tl-row.active .tl-dot { background: var(--navy); }
+  .tl-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: white; }
+  .tl-content .tl-label { font-size: 12.5px; font-weight: 600; color: #C4C8D1; }
+  .tl-row.done .tl-content .tl-label, .tl-row.active .tl-content .tl-label { color: var(--ink); }
+  .tl-content .tl-time { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  /* Live Map (SVG) */
+  .map-card { background: white; border: 1.3px solid var(--line); border-radius: 16px; overflow: hidden; align-self: stretch; }
+  .map-card .map-label { font-size: 10px; font-weight: 700; color: var(--navy); text-transform: uppercase; padding: 12px 14px 0; }
+  .sim-badge { background: #F3F0FF; color: #6B4FBB; font-size: 8.5px; font-weight: 700; text-transform: none; padding: 2px 7px; border-radius: 8px; margin-left: 6px; }
+  .map-card .eta { font-size: 11px; color: var(--muted); padding: 2px 14px 10px; }
+
+  /* Runner Profile */
+  .runner-card { background: white; border: 1.3px solid var(--line); border-radius: 16px; padding: 14px; align-self: stretch; display: flex; gap: 12px; align-items: center; }
+  .runner-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-family: 'Cambria', serif; font-weight: 700; font-size: 17px; flex-shrink: 0; }
+  .runner-info { flex: 1; }
+  .runner-info .r-name { font-size: 13.5px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 5px; }
+  .runner-info .r-name .badge { color: var(--green-deep); font-size: 13px; }
+  .runner-info .r-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .runner-actions { display: flex; gap: 6px; }
+  .runner-actions .r-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-soft); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; }
+
+  .chat-options { padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 8px; background: white; border-top: 1px solid var(--line); }
+  .opt-btn { border: 1.4px solid var(--navy); color: var(--navy); background: white; border-radius: 18px; padding: 8px 13px; font-size: 11.5px; cursor: pointer; transition: all 0.12s ease; }
+  .opt-btn:hover { background: var(--navy); color: white; }
+  .opt-btn.escalate { border-color: var(--amber); color: var(--amber); }
+  .opt-btn.escalate:hover { background: var(--amber); color: white; }
+  .restart-row { text-align: center; padding: 6px 0 10px; background: white; }
+  .restart-row span { font-size: 10px; color: #9AA0AB; cursor: pointer; text-decoration: underline; }
+
+  /* ================= MOBILE: responsive sizing, NOT app takeover ================= */
+  /* This is a website, viewed on a phone browser — the full site stays visible. */
+  /* Only the phone mockup itself gets sized to fit comfortably; nothing is hidden. */
+  @media (max-width: 560px) {
+    .demo-showcase { padding: 50px 5vw; }
+    .phone { width: 100%; max-width: 360px; height: min(680px, 78vh); }
+    .hero { padding: 40px 6vw 30px; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="brand-mark">
+      <div class="logo-dot"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD8AAABgCAYAAACqh6r9AAAofElEQVR4nN18d5hdVdX3b+29zy3TM0kmPaSRMglJgFDyElLEhgiCcEdRKVICBhGk+WG7cxV5BRUUeVEiL6CA6AyogIKRD5MxAaQIgZDey2SSmSTT55az91rfH+fcmUkyKSC2bz3Pee7Mufecs9dea6/yW2sf4AgkIgoAHv3D42fWPP/EpwCgpqZGH+m6/wRSR/pBdXU1ACDdmq2vp+0P/uj1H82rqqpyNfL/xwQckRI1CQ0AX/zTgntufeWWzP0194/sff4/lY4oeQCoXFkpIkIT/On37vYazN8mvPiQiBQgAYgI/aMH+S+nRE1CEwgLXrz6J2ft+4hc/vqlDwDAnMVzzL96bO+VjkryQCh9CE5v/MQdegc1b+u34vKvvnbz1XXz6uz8++d7/8hB/ltQQoI1ftNfrvvx7PpJct6aMzj18m1nAv+ZGnDUkgeASlQKBDS289Qf9N8zsmNt0QpaE1/+y/t+d9/xdfPq7H+aBzgqaSWTSQUAKQKSi5P6C2d+ZsuCFy//1dZB667YNOCvZQWKf/HXZ5897VT6WFtSkqYa1a66uloDc9+HIS7hFIAkgFR1tYBI3oeb/n10z5Zvjz5v3Rm5yvpi/7T6EXLjO1ctaVomxf/o5yYSNXrOnKRJJkUBf5+nOeLFIklVXY0xzKpfY+O+JpTFYNOqZPZ/ffxD74z7w7eWDvh5QZtpsYPoWDMn99GXxjdO+LZpLNy3ZlPHlGjJ8EjEingc3IuZ97u3cw6ejgFOAdj/O2YHYqId2za8YjN7953/yY/bmWdM30dE6QMno7JypaRSqf1v8Pcwn0yKSqWIH6pZPP3Jp99cunpDeyyiYxlLRBnle6WRkkhLZCuGfPklYNpKdOTIDosONhemP998tk1cveD2h294c0fFKcgBMfHhuAhgBdJpCFmIRCBC0FBQQhABAAGI8rMOIkYu2+5HjMn2Ly/RpDLbCgpjb1QMLFk5ftjgZ7568+nre02GSiaTeDeTcEjmEzU1uraqyv33fS984JHfrnlh1dqci0SiWkDwlYNy7NjP6kEXLsPE695Cm9sJEfan8xw7of7Uj9562neWDTy1+vWmXf2nAWJBOjCGyiKQsgaggDzT+eGI9BoVA6Q0RAMsMJpRFAOino+BxYT+pZGVY44pXnbcxLKFN113zhvMABI1OnmUmnBog1cbfGzetNn4mayYiIH2nDhyiHGUSHk6F9FofGkojvlwCworG5DzlV6n13he/37PPN5897TFPy695M9/bn95447CAuVlhJFWJMUADIgy4dwrMBgEQER65EH54WkAShQIzJCOHEt7RmN3W1qphvTkd7bS5Fffarns/M89uvTY4fbW22+vejWFYDnU1la5wzF/RFeX7Wwek8uCQApQIJAmLRoCBWgD2TkW254dBC83Gr5SKk3t/Hb54pKl9S8+9+A3r1gxbmzXheVl+8Q5FkJcGB4YAgeABWAIBIEuCFHPAYJAIJSDqAw5SpPorLLGafa0plgZcaSM9+bErawX70+vtHzg6T83vnjehT9d+LOfPTWutrbKJRI1GofR7iMy37K3wzJrEAgiBMVREDkADmAfEV2IppeHo3XjSMRMBFC+SvudblPh6xOvrbvg13/831ufmTTOv7VfYVZTNuY0FKBy4dMJgEBJMBAl2O9vEg2IB2IFEkCEAXIQsiBmKHEKXk5TEaGVyK1siuq6lXLlg09sW3bTrY9eE0qeDuUVDsl8Y+NKAoBxx044iZ0BkYIWBcUEJgaBYUQA48M1DsbORQMQ9/tBsSDOhbqFdruNY1dV3fDi5+986Vdfu3PS6NyDJYVdBi5j8646UHIKjVzwSUQgBJ8gDZIIlEShJQ6DKJR4IGhoykKJD9g4xEYBBS0xTfuysK+t40F/qGu496qbH75bRASopr4SsCNKPpdxQ50DBCTEAkMWrAWAgmc9OKWgVQH2LhmMzPoxiBkFVu3IRjy9SW/y9xy75uZvvHDdxS/95muXjxjS9CdDXQa+54BAmoxA9fOHI3QfQjmI7oKQH2iaIPg1OVhoONIAWQAWxBpkDRRgOBaT1Q0eL1nadf1lVz36oNHfYqKDJ+CQzNdVTBYA2LazDTlH0GAKJCMgCdRVlIAcwTMatmkwtj47FJ6rgBMfjnIotM6syb1i1wx55d7v/PnmORNG7a4aNahznQFpCDEoC8AFAxcTSF+54BCFQB8EQg6sgkMoCPIkVGYiCb2jDjWGwXBE8Zhau1v8P7+WufRzVz72kFLfYqLwlkeUfO1KAYBdu1s9XwK+FQhMgGYCgeGIYYQgLNCmALteHoT0+mGImSJEXAaGmSCst/VbXrxt4JrffPTqD0Y+NGd81fCKrjZYIu080QwQOSgREDQQBm4KLvzfA6BDA4hg7KJA3WdCm6Z8sLJwgduAiIWKG2/bvpx96c2mS6+/9dc/UUQ8Z06yO//ok/kglk/xro0bBxUXF5+QyeZA1MslSzCIfJRNICij4BqGYsdzgxGTcmgGHAmIiMRm3JqBfy1fmn3wqfP16pVDB+69oH9xl8DGBaSFyYeQD8UCbaPQzgMRB6qO9xDKkw0ucwwTF7N+F9vFL+25+qu3/ercurqUDb3A4df8sjd39cvmeIBjgagwIpGA+4MvJBjdD7vrxqBj7TAoT8MRg6GgROu07XDbR6+e+WzVppoXf/vt52edFLktXrxXOactIQpWAiELwEGE4EJX955IqcAogmGVAIVl6p0tzG8s33P/ohdfrKipSXAymVSHZX7LlgZ0pcWBDASC0A6jt+sMXJBAiUAiWdjGgdj23Fh4GBCsSRQiqwg+YnqP2+tvGPTGecm/3XzvUwu/mDxhvDxVVhD14IwFAaIZonwwOQAaIXB8RBIRiEjgKYgAiQQeRAXhsqic8j3IW+tQ8cjD628iIlm1ajId9u4NDa2lmYwikBLpJQcVuqL8xUEMIAB8eF4RmuqGILemEp4ugLgIcjGAow6axducXWfXDnjxmht+/5lL71zwuZdPn6bWULbeKCEWMYH7Exve+D0mbRKIiEkANiARkMdqd5vitVsyVy5c+Ozw2toq7pP5JUsCvrq62qf4vtEgzYdVQRGQGEQ4AjEE2V2OnX8cCk2lYNWJ4nQcsawPUA5Gab0x+oZsH7Py3u2DF5+RumLA7PEjc2uJWUGKWHEUBgzFNlxi7540CaAYjggQDW09aOuR9Zzs3KfKXn9z33wEpvVgqgjdXEfWqaylwNgxgcFh+BmoOxGB8johgLgInPIRMTHsWjIU/obRMFGBOMBAQZsoHEdIssD2fpsLf68enfPUxlf0xNFlZ43sl25WfpYELKwEKh/gigOEw+cwJO/meo2XiKBIg6BAUN06StAIkiMBkQYZpfa0ZmTdjtbzV69uKu6T+crKgQQA8eIB430YEJEQBQnIQcIgAAjiUtY+iA3gGdimwdj+XAVitgK+ycKXLBznoJGDp5i6rO/WFb3m7Zz89m+efuQrG6eOtVf2L2kSFp8hERF4oVPJu5fQ2B4Sv6DuQ0KJkyiABI4smBhKNGUt0e7mzKT7H3xyQp/Mr1rVJACwY3tDhW8dBELdPjac1fzsc3hawBCVgXEeSDzAi2HXssFw60cjTrHgaslBIxP4dQPdJe1cP/ydmV9bddmi3z/69ScnT47cXFoETVnPKQ7DXtEAKQgpBNYmGMJ7swYCMlFubgcyLnZWn8zX1q4UEaH29kx5zjKgeh52qCSZ4eDEgxILcRrkGfD2Y7D9ueHw7CBYZQFEYJwCmEAcA+mI3mUb7Jp+b3z45mWX/3DJIzfdNXFIy/2lhb6xnLPBM0Or32uF/j3YlSiFrIvTtu2tYw5iPoh/UwygeGDFqJldmSxIhfkX97iV/CCI0CsJiQEigasSH54qxo6lQ5DdMgzKAxgEFgMBwWOGx4SoB7PJrrebh6+47rtrb7zkr7//2rVTJ/PfdIQMsXJKXJD7Ily3CD3YwePuHldvojCmDb4HoEFdGUYmw8cfztWpbC7iudDAdXOLfDLSowWBwdNQEPhKgcmCnIAiDLdrALb/aQCK7TEAHMQ4OM1QKg3NXci6DnjcpTfoFbzSe+vhr/76ipNnf/a82WOG2A1kfa2IWaluBAAiChyaw3dLBABkIUKwOZQexHzetX7/+z+JNDW1CBnTy8P3PFBCuClv/RUYBAenHQQaynnIEaBMCRoWD0du3SREKQ5HAl/H4LsAstKBRhMpYHXkTW6cuOOJAfzDsrkT+ZNjhljLOSFNTogktHfvLe4LtJNAIYzm52D7kHw1AcDOvVzSkvY1AdAMCHSoAfkQN3R3IiAOsi8SgmYCOEg7SDS01vAbhmLbn/oh7sohToFEIyoEFgXjDBw0GFo5stgw5K3Bmydvef7+e29YOWFMv0TFAIb1PWeYAxCEPUA0BPaAcfckxr1dksj+OiKsQCTQuo/YPpkMzpWWVJzCJlbk4JxmoYAhQMLMLvC6ISBBQX4pwtCsQErAiqE4GJIxZWhYNgC5bUNhIoXQ1kJTFkTBcElZiM4iAlLtuV28IvqXyttWX//2vXefMeXcM4Y+50U6jWPjjAMAHyA/fF4vHcgLppdw+iYDAaMgriN9SH4uAKArjX7OlxBkAoIMC92aHzym98O7s+9wSeRdFSARBbvzGGz94xB4XA4FQhA1c5C7k8BjC7JZxMioNtntr6xYNvnBTXcf89Pbq86aMZkeiRfFtNiYNboTBB9KTLdkDyQ6ICzOG0MRAZgkFomgrLxgyyENXtPe1qjvAguLMNo6yMT0oV60H/qajwVy0FSInUuGIrtpKMizEBjAaShRUI5ADAgpCGuQUd479m27snzp5dUvLLjwtSe/dvHE4V1LRWUNXMxp0YHr6fXsPNP5yWdhsHCA+/UmFhREWOJF3pMHMZ9KLWEA2LNnb2VXhkEqyGAIDDpglUivWQXQja7s9z0AMEMbBjeMwM7nRsBDCZTkEIBhGkoA1gKnM4FVZ4JxpNcXrMa6Qa/f/3+euOjE3W889pEJo9INjqFFNPfOSnpLOsAEJUR4JIwQuft/8jOqvCRH/ft11h1S8rk0jOUgsgqYYwTwdWDdGRKgr/mKWfjJveLB7ixQPFhEQFSKXX8eCrdxHCIqAqcYBD9YPgQYOEBZtmCJsiJtRdZVrCzeW1n/zCNrr+l/zpnjPj1+RMY66wsRd6tdX6rfFwmIY8pKRZmsvPW6xIY+mE+J5ykUlZRN9H1GsHDzMGPPOs/PNjNBkQJUr4SCVHdMnp84FoAiDNs4APXPjoLQCDAH0Z7VGvAjiPoaSiuVjmjKEtsC0WJtNrei5LUhT6x65unvfvn8pVNHy4UjKlhLDo7Q4/eOPAEEdk76lRbSpLFDnhk4cGB7X5IXRYSOLvRjUVDEcFCAGBjH0M4AEmqDZngFrcjwLmSzrbBdFuJbOMmAXQSGIyCtQUqgKQdAgbxC7FgyBLJ5HFRMIWMi0ByHkxiGeSdmj8+dtWZ84wnNE80pplgP1fFIUaRDt2L9oJeOv/HlS56qfeDmJ2ZNK7qzvMw34jKOKBsiuAThAAOUEAvUYhGgjRFA+6LYqiGlHXsqB3f9GAD1Wa767fdGR5NPdxpBMZT4ZJWCYQHBwsGAyIdmD76fxsQPWcSmb0Tjrj3o2l6O9M44Mm0auX2D4DeXA34HrEQBVQQYgSEDu2swGhc1YczYYdiFenhwYrQP3RLNzVp7wSea9mzzvQ97J65vXTe+cHRu5oYdK4f7Hk9rG9Vw9ndeu/XB5MlXXDbncz8c8dpb3oXpzgLHkYx2lAYoFmqfDjBADr2OysHlnBtaFDFTx5c8dO1XLtuZSNTo/ZhPJpMqlUpxx5B7xhKtLWe2ovL2WwHCGk5ZEClEREFzHKv+1oDpZ7Zi3Me3ItO+FcqPgPcVINe8Fl07i5Bp8NBZX4z2XTF0NcdhW8uADg8b/q/F8Dkj0W98Dm26i8h1uL2lO4oXVzx57cJPPn0tgM3nX/LfP1ixxi07efLpa09YsKmtJbvn2GGl8ROX/xqRqZ+6/jMnffSu0SvXxE7N+kacRyGiGiI34LAEloMSxZGc6JNOKG568I6LvvvQ/Z+nyspqOUDycxWQ4ljhiEmRgqZS69psFMYoEIQEigtgKAOnBDnyEdECaRiD5Xfsw2m3dsJNfhv74q2IFsfgjbIoOEWhyC/BiHQU1FUAv70EtimCrgaNfbsZO9v2YrDkoLgTrLSqV9u4cMCgy376yk9//sLJL7zZ+bm2LZ1cfM8Ty9rtb+qKNgypGLZnX3PTH0477e7Pn3HBnj996eqTrv7WPct//8YqHkZSKAImggIJQ2DAqgtEHrgzwhNHKfNfM8qupTLaF5TfU9yn2q9eXe+aW7OAVnlrAiHA6laAYzBi4IxFF3vQ2oA2VGLFvT6OT3Wiq+JtkGSgfQuXBXLUhYwBVCmgywyiww36H08oV0VodV1IUyeMM/BVnET53N6vvqDJvf3lJ+iJz7KsXTh5zu8ur28vnKq9+MT6vQIVGzlr8RudKNGx9De+v7w1UtrfqOg+cr4IKR8kXRDyIKKhUQjXKXbUYDLTpsZu/8pN5/w6kajRqRS5UJl7aMmSJQCAN99cZdo6coBWBCaQEAQMXzOszkGJg3IKVhGy2sEWlWDvO5Pw1n2TMLBjCjwHMAXZiiINIwraKQhbZFwG7TaNjtyesEwNEDyAGIahmvztsk5e/fhdD903imh89piR8R+VRoScFcvkOJMR25mOucbW/vHla73Br77WNsBaAygmEQNIHBDAKAvucHZkGZlTp/F9j/3kyq/NSS42tbVV3VFPn37eOjvEOt0dshICR6c4DoiB0xZEFjGXQYR9iKThRSrQ9MJEbHhwDIrcaHQZhq8ImgURBowASghKKZBWIIrAcxpEQNakoVwaEb+EjI7z7optJTsm191CUHj223seryhqXglFxqoIWOUMtNPikeiYLzrKEiC0BFAWTAZAAdsu5nHDYGafrO+rfeDqa6z9hqpLzd2vCrIf8/n6HEzBiWkXREQsLkg+RAcShwbDwBFA7MG4KIyLwkkOXiSGzb89Bjt+NxXlGAVhBSMKjghWBYCiC5FVgxyccnBMMA4wIDA5ODaqxWaloWj7Bfc8/1B/Gp3KDBvTdXdBQQ7slJAClCMoxyQsJOwTlA9QMKFwaRvLtqlpw4067aTCr/3qwfnXOBYSqc6He+iTedQG7Rg5VxD3rYMCwIqDzgnWATCofBAswBpOC6x2cBoQisBxGTyZgDUPj0F73YnoZwaiSxnkTDTE+R0AA7AOio0gEAwMEyA+WLVBqIOQs9xcumvAxrJnbwSAxx455fFBXmYVUVAuVCSARCBcCIIHUp0iji26DMpjMHOOL6i/+JzxFz18z6W3W/tNhaDOcFAUdIDaVwoAOEsDXRAx9VE2UAf9RYKAAXTBemmo9Gi8dV8Z/OXjEYsUwzmC4aCqQ6zgSIMJiHJQ42cVFEEMACUCmLRqcTuoOdLwxe89dc/oYXRO17ih5q6CeCeJYzALnPEBk2WxZFUmQuVGzOQR6ewHTy74/oJrZ0y/8ZaPPDpnzmITQnJ9hn+9mScgxct+d3Px3ua9Q20ePQ1LVL3z9zwFYI4EuDpnQZSDiECrKLhhEl6791h4W6ciqgkZMBwBSmUDHyx5TN2CFQMgKAa0AAKmrMm6nYM2FG8t/+tVAHDtV0seH1jQukkzKZBm8bPwcl1qaDFM5bBMy6zpvPDST4+fWfPAlTefM2/GnkSiRtfVzTsQ8Tic5IHOtuXc1pklwAMpBJFSHqnsrpj3YLkk+Yg/B5IAlXXOh0ihpFeMx5vfG47ozko4VcC+CfJ77QAHQtYA+ewsmFQNYgrQWoqpPdgne8t2fmHhk48MP2fGVV1TRg/8n7I4QXzLw/oVYvZxpSvmnmy+cs3l42Y8/csvXnXTgo+9iUSNFhE6UjMS0KsbK5kUSqVIsmXVIwqL3hhuG50YbYgQZHHCQRVFwkAqrxP5lStKQ5EDfIWIIQwdkqXCaEy4cYLE6qKq+BOidkfeEuhwKVEOTgg6hEuY8loEKFZwziOnnNvXf1vJ5mOWzgfwzfM+MfCRTfWbb9jbHhk6ZkTxzuefuGQuEe179P7ezYhV7mhLfN3Mr1pVSwCwvaG12EEVBNEhKREJgQMFCUqUAUiT138RkCIEUxOFcAZjBgMXf+rYz48fZV6OeIV6y8569dY2//b20S1nt5ttLgbWmgmkBZ4jMBGsCiAtRYChICxXTqlWtUsaCjd96ReLfvHQJR+t2nzulT99bFuzu2Xn9n0VX/ry/844cf79i08EsHBhlX90LPfQQWq/ZMkr0db2TPCNcIDZQQBi6BDO2H9iw8K1aDj4AqUQlWzj1P7vPH3umWes/dgHT1214OLz3xl/35mfmtB+2hoP5ToDx2AFBSCrAAuBYYGW4G4OAkU5KJUha33e1X9r6cbBy78hAiTOrXxs4kjTuaNZm+17zcV/W3iVv7C537tuPe2T+dKykRNyWR0IGkGdvLtMJXlEZ3/gMFB8BdFWQA7FBQP3fCRxQ3MymVTJZFIlFyfNjbVV6Xny8fOObZ1VT6pYkXLCjuAo7L0JcUdfA1YLFHIgWCitdEN6k2seuO2i5zY+98HPfmz222d/dMIWVsD2XR1nP/bY78egtsrlO8PfDXWrfWNYnBw0aNQsoXUI9LkHBlY4oHjRDeVTN5xFEmhGab+YF4t5ks3a4FcpcEIS+rN0wZrU87cnskNb/rK5aCkZQyrimDQYTgCrGKxcaEQBzRGkjYUWR5vkNb1enfDDny9adArnIpdNHRdftmVHc8mLa/Z8BsBt+aTs3TDfM1thXL92w2bK5CwQQPIg0UGptxsaPpiCrggJwEgwiouQO/CntVTrkpI0yQ999eVT5MxvjY7M1mkGQzOsBpgMFBS0BINiAgCGFoE2UDt5K6/CK5N3d7190qVn/9erJ0wr+0tOabyzsv1cETGp1LwjWvdDMx9Sa1taOTGADjueiMI6N0Iph5IOwUoWCbspAHGQgriHHfXrn83mLPKNP3lKUcomJKFvmXLDtye0TPvuUJmkO4hsThNYWRhxiPqAF/YlMFlEnQpcnyLZbFZJ29j6KhHRJ5yobxw5WLftbKBp3//+UycCkAOf966Zb2/3yXLYEweARPVCbQ+Pkwkr8TRQUmY6gJ4uzt5Ui1pOSELfPul7t47dfcqTA+U4w9moBYLOToCCvjyosDosUE7Bk7jeKw3UWLD1yl/WPTnmC+ef/9aUcSW/tCzm7R2tX1QEVFaufFeVrO4Ita4u5URqIqT8Kb4vIE2kVJDRqQOx+HxlFj0aICQQJyiIF2Di+IltADB37tyDn0iQSlRKQhL6yo5brhjTOHlJqRti2CmXMUDGi4J1FAQJ7IB20CJQrJEzObep6C2ztnjJAgBInD32ruLSzs431m6b51hiQZv50e++UACQTCYJgKxdO6aEdOEI6yyUuAB/JQ79fP6eQXeEgIKGgUD3g1BXK8WZFmlv3rIRACZPbupTEilKMaqA4+eNbjlRn3LxuLbpuyKuXAlinCMHqxW0eEFTiQJADpbS0ESqzbVIQ2TbZT+o+cGwCz48d/3YseWPiyoZdt1XHjkXABI1tUdt9ff74V8WNca6clQIcjAAWBREhWVE6F5lHyBfn8lPiBAJs1NRbTmK9gYAqA2zxL6otrbW1dTU6GuOu2b7yHVTz57QdVLGZD3SEhERhg8LVoB2BIiBaAZpR7mczzv6bSrZO3bTlwHgM5896X8KddZfv2nPVSJCtVVHr/r7Mf/SK3X9ujq7PFIaLN012UCtj4iLBz2w8Xi0bfTA8VsDBmsO63qqqqpccnHSpBJff/30wjlfmiinkPLjTIBYw2AhiPMAMVDiwXcOHM9QE7ZJQ2H9Z3/8/PP9q2Ydv3x4hf5tm3izH3h86XFAihNHuctbAT2tZ6PGnzgdqkA7Ecdh6EJhszGU9JXf9rAuDBJGUUzjhNkTD5tN9abUvJSd//p878pRNzwwsXnWDSPteJ3lrDO5GIxEwZqCSpGTAA2CVTlq450lawY3Dlh0OQB85KxTfhgp9NRfXt90OQA0/s/BhvaQzE+YMJQAQOv+ExhRsAgrChpx8vFM3sgppQIo6oCZIAq6ZgpiaJ8167jM0TIPAAtnLPSTMsd88/jquyc2n/yL0d4k4wzbrAk6qaCDXoyoI0SsIM5QrbJFtsfWXf/zVb/pv+CCWS+Xl+YWbW9sSNTXS0FdXXW4yeAomM9T/e5WP5sTQGnK6+tRm04CNBGiEbSgu5599FSNJS4hCX3lCd/80pTW05YWmAHG55wTIVgVtJKRELQjaAFZm+FdAzYPWZt95TJmYMqUId+KxvSQG7/zvdkAIZGoOaLhUwCwdu14AYD6rds833JQjBTqxXhQb5ODkaDu75mdxKMG7W1dLxNRLkBRjn73IxFJJSplLJW3Tm+74OxpLR9YNcAO0QTDLApOMxwJnAKsApQpot12ozTEVly7ePHmstTViZeGlhYuB6mvkoLUHoXPVwBQV7eERYQixQXTu3yGUsHyFunV4w4KNxkgCL/yR/g9Q4mngBFDy959p1BIKUpxjSR01YwPtVa+POPCcXtP3mNcjFh8DvpxInDKg1MAwyq2WW4s2zTilZIH5kOAin7m66L59K/86PHxqK6WIyU7YYaaYgDaKW9K2mcoCuE+6amx5xmnfBNCHtCQbqCPIppRXmo2Acg3eLxrqqJal1ycNNdcev3bU3H6RRPsqWwRg4eoaFJQihARQIuFUQWqUeplS3z1Fx6443fFd37jqj/EC/TaPbv3XIews/pIzIf0stfW1kVhCBuALX1dmj8Zur98GxAECpzBuhXLXwKAilX3vatQszel5qVsUpLmuuk3/nHc7pk3DE6frDrFd8r5cM6CQfCkCGwMdbl23tV/46j0pzdcKQL0H6yrvWj6oudf31haW1vlDvdmh/yWRtTWrox3pW0kb98pz+EBdDiO4lGNwSP6Rd4r070pRcEEJGcm7zkpffKPxxRPNlbEVxyHTzH4wiCbg+cp2i5rZHnHK9duq9kW/8H11/9KR/WORUsXfR4iVFV76IhPJRJVCgDWrfPHd6Zdhc0X+3GYwOZAN6cU4JgKYkomjZ3UCACVlZXvWfJ5qka1S0hCf2fKnTdPrT9tUVl8lOcIToOQjXQiwhnErVLWZnln2epRv57yi8sBYOCgAfd6hs470nbz7lmpr29y7V1+wEj3roWDe26AHjvA+XNEgHXoV1ZI8+bOzeaH/vcSEUkNapiIsjNeOjExsv74vxSaMg2Xdoo5aGB2QFSi1OptwVv2jfnrfiTR/5o1+bHSQlP63w/9ZFRt1aFRHlVZuSBAcIbOGBONlylmdkQ9C7ubcZH9dF56fQpESGs4m2uJFDd3vl/M5ycgKUl17hVXtJ+67xMXT+qY06xQpCM5YZ8IaeOgxal0V4drG7TzuN99/I7LPjR2RmthIZ4Z2L9sPgBgbt81ye6T2xo649mcgiIlPeh8iNfluxgPVKIwAgRDPONBuKNh+vQlzUD4loP3iVKU4oQk9BVnfG7rJDvrk5XpM7qAEmUJYo3AJ4uYLqIdWC9rsi/N37x5c2zQzNLbjTZLAVD13Oo+gy6VL0tv37F5eDob+njuYV6RdE9AT4NRnvcQw2eIpwQRD5uA+WkkRb3fr3eoDV3glyd9YcnkphmfPCZ9cjoHw8YaiUgRstqpLtfCbSWN059tf/TCqpFV6UvPSjwHQPqq0wGAqqtLsVLAyFHHfCydC9b8/r+kI+7zEQi0JpSVlTQTkcxZUv2ukdSjodS8lJ0v872bTvv6oglNx39trD5BK7+IycbhKI0CZWiH2yYbIutvXbz7naIaCao3h7qfAgLVzeZ03AV7wXpQml4RXL5vvU8SwCigvLQw9z7y2ictpIV+UpLmttk/uHvK7pMf7u+N1e3RVhtjD8ZBtXq7eEO/dce+vvfJi6uoylUvmXvI9FYBEOtqdH19o7YsEDD1bucE9m/v7H0uv5dNAHgGKC+J/0MkfiClKOVYWN0+9Z7Lx+yd/kJppNzkxFkGIwKhBt4k63OrL78fr3uYO/eQmIICIHfdVRvZu7czJqQPk7yESG0fOxpEBEb72LF75/8FenZn/QNJBAISkkuPuWTBzNzHdsVpoHHQXMiFyuWaedeATSd0bnz+khSlOCnJPnuPFABUVi4YFC8oqPAdA+D9lni3dPdLZHqIKMDwCmIxVAwYvOcfwmofRERcU5tQp5TOXnd67KwPVWY+2Gi4n7LIcVQzdkfWYWNu05UiQtXoO79XANDQQAN9p0uFXdCxSPkID/tdE5iO/JbSXjipACUFSo6vPDZ4c0niH8d0b6qqCjzA2f3Pf6d89bjzhrVOac+REt8IpW0Lb4muPumOuh98kECoqTk4v1cAsL0BsZylsByrgpZWIlDYURXgc/n0rSe1FUVgEjHa6HRb/S6/5VdrAaDyXYCIfy/lk6A7P556aUJT5ZeOdTN1hqMcQ1T2FGykjWXvfJ2IJJFIHLT2FQBs2rx6ZGfaEhnVPWiS3jHc/n/2+IBwKkhQUFTUPHPoU0GAg9Q/jXmgJwm6Y96PHj6u5ZQ7R8s04/ue5LLtvLP/qlO/tfiWWUQkB768UAFAS1vL4IwfNhuwgJnBh0hqwmAX+beZgB00EcpKSjumfXpVDvuXMf9plKKUS9RAf3PqHV+Z1HD8cyXxYcY3Hbbd2xHZVtqQWjxnsalM1O43LgUARaVDxmVcfvt1L7QGIZqTd2thV85+vTkEQCxKir1/ips7DEnlyqQkRdSF46+85Li20zf0jwyJNPkNfmtpwwc237FiZorANb2krwAg43uDrOieWB3olbb2LJVwe163BwAAEohRGtlc16bg1VeJf9kkpFIpRnUSJ5Sc0HTyxtkfHt8yc61RcaqPreEVBatuFhHqXUZRRMCevXujvstnbb2se68N+d3MopdeCwHsEPU0SgoLs/90Xe+DUqkUJxcnzcUfuXjz5PVnXDQ7c5ZpdjuwvXDt2Qvf/PFHaxO1XBO+1FCJAG2tnRFRBNZCQja08PlytOp1BM1DEu6tVQCsKHiGYXPZtwFgzpzK9wxgvl+UmpeyiyVprv/YF187NTr3mkp1itpUtFLWF62+TpGWlWG/oWpqkqFlpeXTcpksiDQRgm4oJSooT0uwCZBEQ7FGCJ2CWMOwgsCg0DMYVl7UAByiMvsvoHmUsgm5QF80/Jr7Jm6f9fUB7cNpi14792crf3RKPkVWr766vb9wZCBcBMbGiETBaR9O2Z6Dgk+rHJyyYGXB5EOUBSSDWKHC6HHD/9X8HkS1VOvmvz7fu23m978zo2nOj7ncj74my27JN1uoRYv+JHua29LiWTidASuEO52Dw7GCEwXHCoz8eQUE+1iESKlcel9L674VrwI9W9P+XWjIM0MCHPDUu24d3jz6RVvmf/JnG344o5ZqnfLFju70cxHonDjtA2AYYWh20OxgRGAkf46hhQPMXAQmaBeliHLZ5q1/3hs87v1DcN4PSqVSXIlKIaLOqX+dXVXeMqht4571twGAymRpcrargOCKHWWLWFyEfVCvA91/W2jOgdgROCfgLAxbAcf7lZjjT5z3b/vq16ASVKOv+MwVO4/ZN/acioKBH7l32Z2fMMWxoiFlBZ2qgzpUFMFr9+x+9jooVQdFCg2Cg9XZ8BVWCtZjlHi5HRd94bq9Fy9YQH0kT/8WVEXBy8mrqKquZvn/XqIKI+NNPN724JyZA7i+uXMnu3TWs0aRVkEYF4YrOvzDgaHDT8CBLIuOsRfFnteJyKH7PSr/nlRFVS4pSVVFl/8CAP4fQAYarhsUSNEAAAAASUVORK5CYII=" alt="Runners" /></div>
+      <div class="name">Runners Errands</div>
+    </div>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#try-it">Try the demo</a>
+      <a href="#trust">Why Runners</a>
+    </div>
+    <a href="#try-it" class="nav-cta">Try it live</a>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow"><span class="dot3"></span>Q4 2026 Pilot &middot; Ikoyi &middot; Victoria Island &middot; Lekki</div>
+      <h1>Just tell Runnerbot <span class="accent">what you need.</span></h1>
+      <p class="sub">No menus. No categories to browse. Describe what you need, in your own words — Runnerbot 3 plans it, prices it, and gets it done.</p>
+      <div class="hero-ctas">
+        <a href="#try-it" class="btn-primary">Try the live demo</a>
+        <a href="#how-it-works" class="btn-secondary">See how it works</a>
+      </div>
+      <div class="hero-trust">
+        <div class="ht-item"><span class="dot3"></span>Price shown before you commit</div>
+        <div class="ht-item"><span class="dot3"></span>No hidden fees</div>
+        <div class="ht-item"><span class="dot3"></span>Human support, always available</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="float-card fc-1">💡 I can save you ₦800 by combining these errands</div>
+      <div class="float-card fc-2">✓ Runner en route — 12 min away</div>
+      <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500' width='340'%3E%3Crect x='10' y='10' width='380' height='480' rx='40' fill='%23F4F5F8' stroke='%23E4E7EC'/%3E%3Crect x='30' y='60' width='340' height='60' rx='14' fill='white'/%3E%3Crect x='30' y='140' width='260' height='40' rx='12' fill='white'/%3E%3Crect x='30' y='190' width='300' height='40' rx='12' fill='%230A2A97'/%3E%3C/svg%3E" alt="" style="opacity:0; position:absolute;">
+    </div>
+  </section>
+
+  <section class="site-section" id="how-it-works">
+    <div class="section-head">
+      <div class="section-eyebrow">How Runnerbot Thinks</div>
+      <h2>One conversation, start to finish</h2>
+      <p>The same reasoning sequence runs behind every request — visible in the live demo below as it happens.</p>
+    </div>
+    <div class="flow-row">
+      <div class="flow-step"><div class="fs-num">1</div><div class="fs-label">Understand</div><div class="fs-desc">Parses intent from natural language</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">2</div><div class="fs-label">Plan</div><div class="fs-desc">Turns intent into concrete errands</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">3</div><div class="fs-label">Bundle</div><div class="fs-desc">Groups tasks to save time and cost</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">4</div><div class="fs-label">Estimate</div><div class="fs-desc">Real price and timing, upfront</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">5</div><div class="fs-label">Dispatch</div><div class="fs-desc">Guides a human runner precisely</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">6</div><div class="fs-label">Monitor</div><div class="fs-desc">Tracks progress in real time</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="fs-num">7</div><div class="fs-label">Communicate</div><div class="fs-desc">Updates you before you have to ask</div></div>
+    </div>
+  </section>
+
+  <section class="demo-showcase" id="try-it">
+    <div class="inner">
+      <div class="section-head">
+        <div class="section-eyebrow">Live Demo</div>
+        <h2>See Runnerbot 3 in action</h2>
+        <p>A real, working conversation — not a mockup. Try one of the example prompts, or type your own.</p>
+        <div class="demo-feature-list">
+          <div class="df-item"><span class="df-dot">✓</span><span class="df-text">Real-time reasoning stages, visible as the conversation progresses</span></div>
+          <div class="df-item"><span class="df-dot">✓</span><span class="df-text">Transparent pricing — shown before you ever commit to anything</span></div>
+          <div class="df-item"><span class="df-dot">✓</span><span class="df-text">Five languages: English, Pidgin, Yoruba, Hausa, Igbo</span></div>
+        </div>
+      </div>
+      <div class="phone-stage">
+        <div class="phone" id="phoneRoot">
+    <div class="status-bar"><span>9:41</span><span>●●●● Runners</span></div>
+    <div class="app-header">
+      <div class="logo-dot"><img src="data:image/png;base64,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" alt="Runners" /></div>
+      <div class="brand"><div class="name">Runners Errands</div><div class="tag">Ikoyi · Victoria Island · Lekki</div></div>
+      <div class="zone-pill">Q4 2026 Pilot</div>
+    </div>
+    <div class="app-body" id="appBody">
+      <div class="landing" id="landingScreen"></div>
+      <div class="chat-view" id="chatView">
+        <div class="chat-topbar">
+          <span class="back" onclick="goHome()">&larr;</span>
+          <div><div class="title">Runnerbot 3</div><div class="sub">Your AI operations assistant</div></div>
+        </div>
+        <div class="stage-track" id="stageTrack"></div>
+        <div class="lang-row" id="langRow"></div>
+        <div class="plain-toggle-row">
+          <div class="p-switch" id="plainSwitch" onclick="togglePlain()"><div class="knob"></div></div>
+          <span>Plain Language mode</span>
+        </div>
+        <div class="lang-draft-note" id="langDraftNote">⚠ AI-drafted translation — pending native-speaker &amp; review before real deployment.</div>
+        <div class="chat-scroll" id="chatScroll"></div>
+        <div class="chat-options" id="chatOptions"></div>
+        <div class="restart-row"><span onclick="restart()">Restart demo</span></div>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="site-section" id="trust">
+    <div class="section-head">
+      <div class="section-eyebrow">Why Runners</div>
+      <h2>Built to be trusted, not just used</h2>
+      <p>The same principles that govern every conversation Runnerbot has — made visible, not just promised.</p>
+    </div>
+    <div class="trust-grid-site">
+      <div class="trust-card-site"><div class="tc-icon">💰</div><h3>No hidden fees</h3><p>Every price is shown in full before you commit to anything — never charged, never adjusted after the fact.</p></div>
+      <div class="trust-card-site"><div class="tc-icon">⏱️</div><h3>No fake urgency</h3><p>No countdown timers, no manufactured scarcity. Take the time you need to decide.</p></div>
+      <div class="trust-card-site"><div class="tc-icon">🙋</div><h3>Human support, always</h3><p>Every complex or sensitive request escalates to a person. That's the design, not a fallback.</p></div>
+      <div class="trust-card-site"><div class="tc-icon">🔒</div><h3>Consent-based memory</h3><p>Runnerbot only remembers your preferences if you say yes — never inferred silently.</p></div>
+      <div class="trust-card-site"><div class="tc-icon">🗣️</div><h3>Speaks your language</h3><p>English and Nigerian Pidgin today, with Yoruba, Hausa and Igbo on the roadmap.</p></div>
+      <div class="trust-card-site"><div class="tc-icon">🚲</div><h3>Professional, electric fleet</h3><p>Trained runners on an electric fleet — better for Lagos traffic and Lagos air.</p></div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="sf-brand">Runners Errands</div>
+    <div class="sf-line">Nigeria's AI-Coordinated Convenience Infrastructure &middot; Ikoyi &middot; Victoria Island &middot; Lekki &middot; Q4 2026</div>
+  </footer>
+
+<script>
+// ============ LANDING: CHAT-FIRST ============
+document.getElementById('landingScreen').innerHTML = `
+  <div class="landing-greet">Hi, I'm Runnerbot 3.<br>What can I help you with today?</div>
+  <div class="landing-sub">Describe what you need — I'll figure out the rest.</div>
+  <div class="big-input-wrap">
+    <textarea class="big-input" id="bigInput" placeholder="Buy groceries for dinner tonight..." rows="2"></textarea>
+    <div class="input-actions">
+      <div class="mic-btn" title="Voice input (demo)" onclick="micTap()"><svg viewBox="0 0 24 24" fill="none"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" fill="white"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4M8 22h8" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="send-btn" onclick="sendTyped()"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11l18-8-8 18-2-8-8-2z" fill="white"/></svg></div>
+    </div>
+  </div>
+  <div class="autoplay-cta" onclick="playAutoDemo()">
+    <span class="ap-icon">\u25B6</span>
+    <div><div class="ap-title">Watch Runnerbot in action</div><div class="ap-sub">See a real multi-stop errand handled, start to finish</div></div>
+  </div>
+  <div class="investor-link" onclick="playInvestorMode()">\u25B6 Investor walkthrough \u2014 three scenarios, hands-free</div>
+  <div class="examples-label">Try an example</div>
+  <div class="examples-scroll" id="examplesScroll"></div>
+`;
+const examples = [
+  ["Buy groceries for dinner tonight", "grocery_start"],
+  ["Pick up my prescription", "pharmacy_start"],
+  ["Deliver these documents", "business_start"],
+  ["Send flowers to my mum", "grocery_start"],
+  ["Schedule laundry pickup every Friday", "recurring_start"],
+  ["I forgot my laptop charger at the office", "emergency_start"],
+  ["Can you combine these errands?", "guests_start"],
+  ["I have guests coming Saturday", "guests_start"],
+  ["Reorder my usual groceries", "repeat_start"],
+  ["I left my passport at work", "emergency_start"],
+  ["Do you support business accounts?", "business_start"],
+];
+document.getElementById('examplesScroll').innerHTML = examples.map(([label, node]) =>
+  `<span class="ex-chip" onclick="openChat('${node}', '${label.replace(/'/g, "\\'")}')">${label}</span>`
+).join('');
+function micTap() { document.getElementById('bigInput').placeholder = "Listening... (voice input is a Stage 1 roadmap feature)"; }
+function sendTyped() {
+  const val = document.getElementById('bigInput').value.trim();
+  if (!val) return;
+  openChat('grocery_start', val);
+}
+
+// ============ REASONING STAGES (Product Bible Chapter 4) ============
+const stages = ["Understand", "Plan", "Bundle", "Estimate", "Dispatch", "Monitor", "Communicate"];
+function renderStageTrack(activeIdx) {
+  document.getElementById('stageTrack').innerHTML = stages.map((s, i) => {
+    let cls = i < activeIdx ? 'done' : (i === activeIdx ? 'active' : '');
+    return `<div class="stage-step ${cls}">${s}</div>`;
+  }).join('');
+}
+
+// ============ EN: full conversation tree ============
+const en = {
+  start: { stage: 0, bot: ["Got it \u2014 let me work out what you need."],
+    options: [ {label:"I need stuff for the week", next:"grocery_start"}, {label:"I have guests coming Saturday", next:"guests_start"}, {label:"Pick up my prescription", next:"pharmacy_start"}, {label:"I run a small business", next:"business_start"} ] },
+
+  grocery_start: { stage: 0, bot: ["On it. Quick one \u2014 full restock, or specific items you already know you need?"],
+    options: [ {label:"Full restock, usual stuff", next:"grocery_plan"}, {label:"Just a few specific items", next:"grocery_plan"}, {label:"First time, not sure", next:"grocery_plan"} ] },
+  grocery_plan: { stage: 1, bot: ["Here's the plan:"],
+    plan: { title: "Execution Plan", items: ["Pick up groceries", "Stop at pharmacy", "Deliver to home"], time: "52 minutes", cost: "\u20a64,600" },
+    options: [ {label:"Looks good", next:"grocery_suggestion"}, {label:"What's the price breakdown?", next:"grocery_price"} ] },
+  grocery_suggestion: { stage: 2, bot: [], suggestion: "I can save you \u20a6800 by combining this with a nearby errand. You mentioned a prescription earlier \u2014 want me to add a pharmacy stop to this same run?",
+    options: [ {label:"Yes, add the pharmacy stop", next:"grocery_multistop"}, {label:"No, just groceries", next:"grocery_price"} ] },
+  grocery_multistop: { stage: 2, bot: ["Got it \u2014 \u201cafter the pharmacy, stop at Shoprite\u201d \u2014 updating the plan now."],
+    plan: { title: "Execution Plan (updated)", items: ["Pick up prescription", "Stop at Shoprite for groceries", "Deliver to home"], time: "58 minutes", cost: "\u20a65,300" },
+    delight: "Nice \u2014 bundling these two saved you \u20a61,100 versus booking them separately.",
+    options: [ {label:"Perfect, what's the price?", next:"grocery_price"} ] },
+  grocery_price: { stage: 3, bot: ["Here's the full breakdown \u2014 nothing charged until you confirm."],
+    price: { title: "Standard Delivery", rows: [["Items (estimated)", "\u20a63,500"], ["Delivery fee", "\u20a61,800"]], total: "\u20a65,300", note: "Estimate \u2014 final total may vary slightly by actual basket cost." },
+    options: [ {label:"Go ahead", next:"grocery_confirmed"}, {label:"Can I get it faster?", next:"grocery_priority"}, {label:"Connect me with support", next:"escalate"} ] },
+  grocery_priority: { stage: 3, bot: [], suggestion: "Traffic is heavy on this route right now. Leaving in 30 minutes instead of now would actually save about 20 minutes \u2014 want me to schedule it for then, or go immediately anyway?",
+    price: { title: "Priority Delivery", rows: [["Items (estimated)", "\u20a63,500"], ["Priority delivery fee", "\u20a63,000"]], total: "\u20a66,500", note: "40\u201360% premium over standard \u2014 reflects real routing cost." },
+    options: [ {label:"Wait 30 minutes", next:"grocery_confirmed"}, {label:"Go now anyway", next:"grocery_confirmed"} ] },
+  grocery_confirmed: { stage: 4, bot: ["Order confirmed \u2014 dispatching your runner now."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","2:14 PM",true],["Runner Assigned","2:16 PM",true],["Runner En Route","2:18 PM",true],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    map: true,
+    runner: { name: "Emeka O.", rating: "4.9", vehicle: "SY-SM E-Bike", verified: true, completed: "412", distance: "1.2km away" },
+    options: [ {label:"See a live status update", next:"grocery_update"}, {label:"Restart the demo", next:"start"} ] },
+  grocery_update: { stage: 6, bot: ["Update: your runner's at Shoprite now, running about 10 minutes behind \u2014 one item needed a substitute, so I picked the closest match. Let me know if you'd rather I hadn't."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","2:14 PM",true],["Runner Assigned","2:16 PM",true],["Runner En Route","2:18 PM",true],["Pickup Complete","2:34 PM",true],["On the Way","2:36 PM",true],["Delivered","",false]] },
+    options: [ {label:"That's fine, thanks", next:"end_positive"}, {label:"Connect me with support", next:"escalate"} ] },
+
+  guests_start: { stage: 0, bot: ["Let's get you sorted. A few quick things: how many guests, and are we talking food, drinks, cleaning help, or all of the above?"],
+    options: [ {label:"About 8 people, food + drinks", next:"guests_plan"}, {label:"Just need groceries", next:"grocery_start"}, {label:"Need help with everything", next:"guests_plan_full"} ] },
+  guests_plan: { stage: 1, bot: ["Here's the plan \u2014 bundled into one route so you're not paying for two separate trips:"],
+    plan: { title: "Execution Plan", items: ["Grocery run (food for 8)", "Drinks/beverage stop", "Deliver to home"], time: "1 hr 40 min", cost: "\u20a644,200" },
+    options: [ {label:"That works, what's the price?", next:"guests_price"}, {label:"Add cleaning supplies too", next:"guests_plan_full"} ] },
+  guests_plan_full: { stage: 1, bot: ["Added \u2014 full plan: food, drinks, and basic cleaning supplies, all bundled into one run."],
+    plan: { title: "Execution Plan (full)", items: ["Grocery run (food for 8)", "Drinks/beverage stop", "Cleaning supplies stop", "Deliver to home"], time: "2 hr 05 min", cost: "\u20a651,400" },
+    options: [ {label:"Perfect, what's the price?", next:"guests_price"} ] },
+  guests_price: { stage: 3, bot: ["One delivery fee for the whole bundle \u2014 not charged per stop."],
+    price: { title: "Standard Delivery (bundled)", rows: [["Items (estimated)", "\u20a642,000"], ["Delivery fee (bundled)", "\u20a62,200"]], total: "\u20a644,200", note: "Bundling saves you a second delivery fee versus separate runs." },
+    options: [ {label:"Go ahead", next:"guests_confirmed"}, {label:"Connect me with support", next:"escalate"} ] },
+  guests_confirmed: { stage: 4, bot: ["Dispatching now \u2014 I'll keep you posted at each stop, not just at the end."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",false],["Runner En Route","",false],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    runner: { name: "Amaka T.", rating: "4.8", vehicle: "SY-SM E-Bike", verified: true, completed: "288", distance: "2.4km away" },
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  pharmacy_start: { stage: 0, bot: ["Is this a repeat prescription I can look up, or a new one you'll need to describe?"],
+    options: [ {label:"Repeat prescription", next:"pharmacy_plan"}, {label:"New one, I'll describe it", next:"pharmacy_new"} ] },
+  pharmacy_plan: { stage: 3, bot: ["Found it \u2014 same as last time."],
+    price: { title: "Standard Delivery", rows: [["Prescription (estimated)", "\u20a68,500"], ["Delivery fee", "\u20a61,500"]], total: "\u20a610,000", note: "Estimate \u2014 pharmacy will confirm exact price at pickup." },
+    options: [ {label:"Go ahead", next:"pharmacy_confirmed"}, {label:"Connect me with support", next:"escalate"} ] },
+  pharmacy_new: { stage: 0, bot: ["For a new prescription, I'll need the exact medication name and dosage \u2014 this one I won't guess on. Want to type it in, or should I connect you with support first?"],
+    options: [ {label:"I'll type it in", next:"pharmacy_plan"}, {label:"Connect me with support", next:"escalate"} ] },
+  pharmacy_confirmed: { stage: 4, bot: ["Dispatched \u2014 I'll update you as it moves."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",false],["Runner En Route","",false],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    runner: { name: "David K.", rating: "5.0", vehicle: "SY-SM E-Bike", verified: true, completed: "567", distance: "0.8km away" },
+    options: [ {label:"See a live status update", next:"pharmacy_update"}, {label:"Restart the demo", next:"start"} ] },
+  pharmacy_update: { stage: 6, bot: [], suggestion: "The pharmacy near you was low on one item \u2014 the branch across the road has it in stock. I've redirected your runner there, about 4 minutes extra.",
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",true],["Runner En Route","",true],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    options: [ {label:"That's fine, thanks", next:"end_positive"}, {label:"Connect me with support", next:"escalate"} ] },
+
+  business_start: { stage: 0, bot: ["Happy to help you delegate. What kind of errands \u2014 one-off, or something recurring during business hours?"],
+    options: [ {label:"Recurring, during work hours", next:"business_plan"}, {label:"Just a one-off today", next:"grocery_start"} ] },
+  business_plan: { stage: 1, bot: ["A lot of owners set up a standing weekly run for this \u2014 bank drop-offs, supply pickups, document courier \u2014 so you're not thinking about it each time."],
+    plan: { title: "Suggested Standing Plan", items: ["Weekly bank/document run", "Supply pickup as needed", "Priority delivery available"], time: "Weekly, ~45 min/run", cost: "From \u20a63,500/mo" },
+    options: [ {label:"Tell me about pricing", next:"business_price"}, {label:"Connect me with support", next:"escalate"} ] },
+  business_price: { stage: 3, bot: ["For recurring use, the subscription tier makes more sense than paying per run."],
+    price: { title: "Subscription Tier", rows: [["Covers ~3 standard runs/month", "\u20a63,500\u2013\u20a64,500/mo"], ["Additional runs", "Standard per-run pricing"]], total: "From \u20a63,500/mo", note: "Priced against real typical usage \u2014 not inflated to look like a discount." },
+    options: [ {label:"Do you support multiple team members?", next:"business_teams"}, {label:"Set this up \u2014 connect me with support", next:"escalate"}, {label:"Restart the demo", next:"start"} ] },
+  business_teams: { stage: 3, bot: [], comingSoon: { title: "Business Accounts", items: ["Multiple team members, one account", "Shared errand history and preferences", "Monthly consolidated billing", "Approval workflows for larger orders"], note: "Coming soon \u2014 not yet available in the Q4 2026 pilot. Shown here so you know it's planned, not to overpromise on today's scope." },
+    options: [ {label:"Set this up \u2014 connect me with support", next:"escalate"}, {label:"Restart the demo", next:"start"} ] },
+
+  repeat_start: { stage: 0, bot: ["Welcome back \u2014 want me to reorder your usual grocery run from last time?"],
+    options: [ {label:"Yes, reorder it", next:"repeat_confirm"}, {label:"Let me change something first", next:"grocery_start"} ] },
+  repeat_confirm: { stage: 3, bot: ["Same as last time \u2014 no need to go through it all again."],
+    plan: { title: "Your Usual Order", items: ["Rice, oil, eggs, bread", "Tomatoes, pepper, onions", "Milk"], time: "50 minutes", cost: "\u20a64,600" },
+    price: { title: "Standard Delivery", rows: [["Items (estimated)", "\u20a62,800"], ["Delivery fee", "\u20a61,800"]], total: "\u20a64,600", note: "One tap \u2014 same basket, same runner zone, nothing re-typed." },
+    options: [ {label:"Go ahead", next:"grocery_confirmed"}, {label:"Restart the demo", next:"start"} ] },
+
+  recurring_start: { stage: 0, bot: ["Got it \u2014 a standing pickup. What time works best on Fridays?"],
+    options: [ {label:"5pm every Friday", next:"recurring_confirm"} ] },
+  recurring_confirm: { stage: 1, bot: ["Done \u2014 laundry pickup, every Friday at 5pm, starting this week."],
+    plan: { title: "Recurring Schedule", items: ["Laundry pickup, every Friday", "5:00pm collection window", "Cancel or adjust anytime"], time: "Weekly", cost: "\u20a61,800/pickup" },
+    options: [ {label:"Perfect, set it up", next:"recurring_done"}, {label:"Restart the demo", next:"start"} ] },
+  recurring_done: { stage: 6, bot: ["You're set \u2014 I'll remind you the evening before each pickup, and you can pause or change this anytime."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  emergency_start: { stage: 0, bot: ["I hear the urgency \u2014 which office, and is anyone there right now who can hand it over?"],
+    options: [ {label:"Victoria Island office, security has it", next:"emergency_dispatch"}, {label:"Connect me with support", next:"escalate"} ] },
+  emergency_dispatch: { stage: 4, bot: ["On it \u2014 prioritising this over routine deliveries. Nearest runner is 6 minutes away."],
+    price: { title: "Priority Delivery", rows: [["Retrieval + delivery", "\u20a62,500"], ["Priority fee", "\u20a61,500"]], total: "\u20a64,000", note: "Priority pricing reflects genuine urgency, not a markup for panic." },
+    options: [ {label:"Go ahead, please hurry", next:"emergency_confirmed"} ] },
+  emergency_confirmed: { stage: 6, bot: ["Dispatched. I'll message you the second your runner has it in hand \u2014 you don't need to keep checking."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  escalate: { stage: 6, bot: ["Of course \u2014 connecting you with a Runners support specialist now. I've passed along everything we've discussed so you won't need to repeat yourself.", "Every complex or sensitive request goes to a human. That's not a fallback \u2014 it's the design."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+  end_positive: { stage: 6, bot: ["Glad it worked out. I'm here whenever you need the next one handled."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+};
+
+// ============ PCM: full conversation tree (Nigerian Pidgin) ============
+const pcm = {
+  start: { stage: 0, bot: ["I don gerrit \u2014 make I work out wetin you need."],
+    options: [ {label:"I need stuff for the week", next:"grocery_start"}, {label:"I get guest wey dey come Saturday", next:"guests_start"}, {label:"Go pick my prescription", next:"pharmacy_start"}, {label:"I run small business", next:"business_start"} ] },
+
+  grocery_start: { stage: 0, bot: ["I dey on top am. Quick question \u2014 full restock, or specific items wey you already sabi you need?"],
+    options: [ {label:"Full restock, na the usual", next:"grocery_plan"}, {label:"Just few specific items", next:"grocery_plan"}, {label:"Na first time, I no sure", next:"grocery_plan"} ] },
+  grocery_plan: { stage: 1, bot: ["See the plan:"],
+    plan: { title: "Execution Plan", items: ["Pick up groceries", "Stop for pharmacy", "Deliver come house"], time: "52 minutes", cost: "\u20a64,600" },
+    options: [ {label:"E correct", next:"grocery_suggestion"}, {label:"Wetin be the price breakdown?", next:"grocery_price"} ] },
+  grocery_suggestion: { stage: 2, bot: [], suggestion: "I fit save you \u20a6800 if I combine dis with nearby errand. You talk say you get prescription \u2014 you wan make I add pharmacy stop to dis same run?",
+    options: [ {label:"Yes, add the pharmacy stop", next:"grocery_multistop"}, {label:"No, na groceries only", next:"grocery_price"} ] },
+  grocery_multistop: { stage: 2, bot: ["I don gerrit \u2014 \u201cafter the pharmacy, stop for Shoprite\u201d \u2014 I dey update the plan now."],
+    plan: { title: "Execution Plan (updated)", items: ["Pick up prescription", "Stop for Shoprite for groceries", "Deliver come house"], time: "58 minutes", cost: "\u20a65,300" },
+    delight: "Correct \u2014 bundling dis two save you \u20a61,100 versus booking them separately.",
+    options: [ {label:"Perfect, wetin be price?", next:"grocery_price"} ] },
+  grocery_price: { stage: 3, bot: ["See the full breakdown \u2014 nothing go charge until you confirm."],
+    price: { title: "Standard Delivery", rows: [["Items (estimate)", "\u20a63,500"], ["Delivery fee", "\u20a61,800"]], total: "\u20a65,300", note: "Estimate \u2014 final total fit change small based on actual basket cost." },
+    options: [ {label:"Go ahead", next:"grocery_confirmed"}, {label:"I fit get am faster?", next:"grocery_priority"}, {label:"Connect me to support", next:"escalate"} ] },
+  grocery_priority: { stage: 3, bot: [], suggestion: "Traffic dey heavy for dis route now. If you leave for 30 minutes instead of now, e go save like 20 minutes \u2014 you wan make I schedule am for then, or make we go now sef?",
+    price: { title: "Priority Delivery", rows: [["Items (estimate)", "\u20a63,500"], ["Priority delivery fee", "\u20a63,000"]], total: "\u20a66,500", note: "40\u201360% premium pass standard \u2014 e reflect real routing cost." },
+    options: [ {label:"Wait 30 minutes", next:"grocery_confirmed"}, {label:"Go now sef", next:"grocery_confirmed"} ] },
+  grocery_confirmed: { stage: 4, bot: ["Order don confirm \u2014 I dey dispatch your runner now."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","2:14 PM",true],["Runner Assigned","2:16 PM",true],["Runner En Route","2:18 PM",true],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    map: true,
+    runner: { name: "Emeka O.", rating: "4.9", vehicle: "SY-SM E-Bike", verified: true, completed: "412", distance: "1.2km away" },
+    options: [ {label:"Show me live status update", next:"grocery_update"}, {label:"Restart the demo", next:"start"} ] },
+  grocery_update: { stage: 6, bot: ["Update: your runner dey Shoprite now, e dey run like 10 minutes late \u2014 one item need substitute, so I pick the closest match. Tell me if you no like am."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","2:14 PM",true],["Runner Assigned","2:16 PM",true],["Runner En Route","2:18 PM",true],["Pickup Complete","2:34 PM",true],["On the Way","2:36 PM",true],["Delivered","",false]] },
+    options: [ {label:"E dey fine, thank you", next:"end_positive"}, {label:"Connect me to support", next:"escalate"} ] },
+
+  guests_start: { stage: 0, bot: ["Make we sort you out. Few quick things: how many guest, and na food, drinks, cleaning help, or all of them?"],
+    options: [ {label:"Like 8 people, food + drinks", next:"guests_plan"}, {label:"Just need groceries", next:"grocery_start"}, {label:"I need help with everything", next:"guests_plan_full"} ] },
+  guests_plan: { stage: 1, bot: ["See the plan \u2014 I bundle am into one route so you no go pay for two separate trip:"],
+    plan: { title: "Execution Plan", items: ["Grocery run (food for 8)", "Drinks/beverage stop", "Deliver come house"], time: "1 hr 40 min", cost: "\u20a644,200" },
+    options: [ {label:"E dey work, wetin be price?", next:"guests_price"}, {label:"Add cleaning supplies too", next:"guests_plan_full"} ] },
+  guests_plan_full: { stage: 1, bot: ["I don add am \u2014 full plan: food, drinks, and basic cleaning supplies, all bundle into one run."],
+    plan: { title: "Execution Plan (full)", items: ["Grocery run (food for 8)", "Drinks/beverage stop", "Cleaning supplies stop", "Deliver come house"], time: "2 hr 05 min", cost: "\u20a651,400" },
+    options: [ {label:"Perfect, wetin be price?", next:"guests_price"} ] },
+  guests_price: { stage: 3, bot: ["One delivery fee for the whole bundle \u2014 no be per stop dem go charge you."],
+    price: { title: "Standard Delivery (bundled)", rows: [["Items (estimate)", "\u20a642,000"], ["Delivery fee (bundled)", "\u20a62,200"]], total: "\u20a644,200", note: "Bundling save you second delivery fee versus separate runs." },
+    options: [ {label:"Go ahead", next:"guests_confirmed"}, {label:"Connect me to support", next:"escalate"} ] },
+  guests_confirmed: { stage: 4, bot: ["I dey dispatch now \u2014 I go update you for each stop, no be only for the end."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",false],["Runner En Route","",false],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    runner: { name: "Amaka T.", rating: "4.8", vehicle: "SY-SM E-Bike", verified: true, completed: "288", distance: "2.4km away" },
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  pharmacy_start: { stage: 0, bot: ["Na repeat prescription I fit find, or na new one wey you go describe?"],
+    options: [ {label:"Repeat prescription", next:"pharmacy_plan"}, {label:"New one, I go describe am", next:"pharmacy_new"} ] },
+  pharmacy_plan: { stage: 3, bot: ["I don find am \u2014 same as last time."],
+    price: { title: "Standard Delivery", rows: [["Prescription (estimate)", "\u20a68,500"], ["Delivery fee", "\u20a61,500"]], total: "\u20a610,000", note: "Estimate \u2014 pharmacy go confirm exact price when dem dey pick am up." },
+    options: [ {label:"Go ahead", next:"pharmacy_confirmed"}, {label:"Connect me to support", next:"escalate"} ] },
+  pharmacy_new: { stage: 0, bot: ["For new prescription, I go need the exact medication name and dosage \u2014 dis one I no go guess. You wan type am in, or make I connect you to support first?"],
+    options: [ {label:"I go type am in", next:"pharmacy_plan"}, {label:"Connect me to support", next:"escalate"} ] },
+  pharmacy_confirmed: { stage: 4, bot: ["I don dispatch am \u2014 I go update you as e dey move."],
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",false],["Runner En Route","",false],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    runner: { name: "David K.", rating: "5.0", vehicle: "SY-SM E-Bike", verified: true, completed: "567", distance: "0.8km away" },
+    options: [ {label:"Show me live status update", next:"pharmacy_update"}, {label:"Restart the demo", next:"start"} ] },
+  pharmacy_update: { stage: 6, bot: [], suggestion: "The pharmacy near you don low for one item \u2014 the branch across the road get am. I don redirect your runner go there, like 4 minutes extra.",
+    timeline: { title: "Live Order Timeline", steps: [["Order Confirmed","Now",true],["Runner Assigned","",true],["Runner En Route","",true],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] },
+    options: [ {label:"E dey fine, thank you", next:"end_positive"}, {label:"Connect me to support", next:"escalate"} ] },
+
+  business_start: { stage: 0, bot: ["I go happy to help you delegate. Wetin kind errand \u2014 one-off, or something wey go repeat during business hours?"],
+    options: [ {label:"E go repeat, during work hours", next:"business_plan"}, {label:"Just one-off today", next:"grocery_start"} ] },
+  business_plan: { stage: 1, bot: ["Plenty owners dey set up standing weekly run for dis \u2014 bank drop-off, supply pickup, document courier \u2014 so you no go dey think am each time."],
+    plan: { title: "Suggested Standing Plan", items: ["Weekly bank/document run", "Supply pickup as e dey needed", "Priority delivery available"], time: "Weekly, ~45 min/run", cost: "From \u20a63,500/mo" },
+    options: [ {label:"Tell me about pricing", next:"business_price"}, {label:"Connect me to support", next:"escalate"} ] },
+  business_price: { stage: 3, bot: ["For recurring use, subscription tier make sense pass paying per run."],
+    price: { title: "Subscription Tier", rows: [["E cover ~3 standard runs/month", "\u20a63,500\u2013\u20a64,500/mo"], ["Extra runs", "Standard per-run pricing"]], total: "From \u20a63,500/mo", note: "Dem price am based on real typical usage \u2014 no be inflated to look like discount." },
+    options: [ {label:"You dey support multiple team members?", next:"business_teams"}, {label:"Set am up \u2014 connect me to support", next:"escalate"}, {label:"Restart the demo", next:"start"} ] },
+  business_teams: { stage: 3, bot: [], comingSoon: { title: "Business Accounts", items: ["Multiple team members, one account", "Shared errand history and preferences", "Monthly consolidated billing", "Approval workflows for bigger orders"], note: "E dey come soon \u2014 e no dey available yet for the Q4 2026 pilot. We show am here so you go sabi say e dey plan, no be say we dey overpromise on today scope." },
+    options: [ {label:"Set am up \u2014 connect me to support", next:"escalate"}, {label:"Restart the demo", next:"start"} ] },
+
+  repeat_start: { stage: 0, bot: ["Welcome back \u2014 you want make I reorder your usual grocery run from last time?"],
+    options: [ {label:"Yes, reorder am", next:"repeat_confirm"}, {label:"Make I change something first", next:"grocery_start"} ] },
+  repeat_confirm: { stage: 3, bot: ["Same as last time \u2014 no need to go through everything again."],
+    plan: { title: "Your Usual Order", items: ["Rice, oil, egg, bread", "Tomato, pepper, onion", "Milk"], time: "50 minutes", cost: "\u20a64,600" },
+    price: { title: "Standard Delivery", rows: [["Items (estimate)", "\u20a62,800"], ["Delivery fee", "\u20a61,800"]], total: "\u20a64,600", note: "One tap \u2014 same basket, same runner zone, nothing wey you go retype." },
+    options: [ {label:"Go ahead", next:"grocery_confirmed"}, {label:"Restart the demo", next:"start"} ] },
+
+  recurring_start: { stage: 0, bot: ["I don gerrit \u2014 standing pickup. Wetin time fit work best for Friday?"],
+    options: [ {label:"5pm every Friday", next:"recurring_confirm"} ] },
+  recurring_confirm: { stage: 1, bot: ["Don set \u2014 laundry pickup, every Friday for 5pm, starting dis week."],
+    plan: { title: "Recurring Schedule", items: ["Laundry pickup, every Friday", "5:00pm collection window", "You fit cancel or change anytime"], time: "Weekly", cost: "\u20a61,800/pickup" },
+    options: [ {label:"Perfect, set am up", next:"recurring_done"}, {label:"Restart the demo", next:"start"} ] },
+  recurring_done: { stage: 6, bot: ["You don set \u2014 I go remind you the evening before each pickup, and you fit pause or change am anytime."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  emergency_start: { stage: 0, bot: ["I feel the urgency \u2014 which office, and somebody dey there now wey fit hand am over?"],
+    options: [ {label:"Victoria Island office, security get am", next:"emergency_dispatch"}, {label:"Connect me to support", next:"escalate"} ] },
+  emergency_dispatch: { stage: 4, bot: ["I dey on top am \u2014 I dey prioritize dis one over normal deliveries. Nearest runner dey 6 minutes away."],
+    price: { title: "Priority Delivery", rows: [["Retrieval + delivery", "\u20a62,500"], ["Priority fee", "\u20a61,500"]], total: "\u20a64,000", note: "Priority price reflect real urgency, no be markup for panic." },
+    options: [ {label:"Go ahead, abeg hurry", next:"emergency_confirmed"} ] },
+  emergency_confirmed: { stage: 6, bot: ["I don dispatch am. I go message you the second your runner get am for hand \u2014 you no need to dey check."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+
+  escalate: { stage: 6, bot: ["Of course \u2014 I dey connect you to Runners support specialist now. I don pass everything wey we don discuss so you no go need repeat yourself.", "Every complex or sensitive request dey go to human. Na so we design am \u2014 e no be say the system fail."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+  end_positive: { stage: 6, bot: ["Glad say e work out. I dey here whenever you need the next one handled."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+};
+
+// ============ YO / HA / IG \u2014 honest, limited demo ============
+const yo = { start: { stage: 0, bot: ["Bawo, Emi ni Runnerbot.", "(Ohun kikọ ni Gẹ̀ẹ́sì ki alaye o le pe deede: kikọ ni kikun ni ede Yoruba wa lori eto ojo iwaju, ti o duro de ayewo lati odo agbeegbe abinibi. A o tesiwaju ni Gẹ̀ẹ́sì tabi Pidgin nisisiyi.)"], note: true,
+  options: [ {label:"Continue in English", next:"start", forceLang:"en"}, {label:"Continue in Pidgin", next:"start", forceLang:"pcm"} ] } };
+const ha = { start: { stage: 0, bot: ["Sannu, Ni ne Runnerbot.", "(An rubuta wannan a Turanci don tabbatar da daidaito: cikakken abun ciki a harshen Hausa yana cikin shirin gaba, yana jiran bitar masani. Za mu ci gaba da Turanci ko Pidgin yanzu.)"], note: true,
+  options: [ {label:"Continue in English", next:"start", forceLang:"en"}, {label:"Continue in Pidgin", next:"start", forceLang:"pcm"} ] } };
+const ig = { start: { stage: 0, bot: ["Ndewo, Abụ m Runnerbot.", "(E dere nke a n'Bekee ka amara ihe ziri ezi: mmemme zuru oke n'asụsụ Igbo dị na atụmatụ ọdịnihu, na-eche nyocha site n'aka ndị amamihe. Anyị ga-aga n'ihu na Bekee ma ọ bụ Pidgin ugbu a.)"], note: true,
+  options: [ {label:"Continue in English", next:"start", forceLang:"en"}, {label:"Continue in Pidgin", next:"start", forceLang:"pcm"} ] } };
+
+const content = { en, pcm, yo, ha, ig };
+const langLabels = { en: "EN", pcm: "Pidgin", yo: "Yor\u00f9b\u00e1", ha: "Hausa", ig: "Igbo" };
+
+let currentLang = "en";
+let plainMode = false;
+const scroll = document.getElementById("chatScroll");
+const optionsEl = document.getElementById("chatOptions");
+
+function getNode(id) {
+  if (content[currentLang] && content[currentLang][id]) return content[currentLang][id];
+  return en[id];
+}
+function buildLangRow() {
+  const row = document.getElementById("langRow");
+  row.innerHTML = "";
+  Object.keys(langLabels).forEach(code => {
+    const b = document.createElement("div");
+    b.className = "lang-btn" + (code === currentLang ? " active" : "");
+    b.textContent = langLabels[code];
+    b.onclick = () => { currentLang = code; buildLangRow(); document.getElementById("langDraftNote").classList.toggle("show", ["yo","ha","ig"].includes(code)); restart(); };
+    row.appendChild(b);
+  });
+  document.getElementById("langDraftNote").classList.toggle("show", ["yo","ha","ig"].includes(currentLang));
+}
+function togglePlain() {
+  plainMode = !plainMode;
+  document.getElementById("plainSwitch").classList.toggle("on", plainMode);
+}
+
+function openChat(nodeId, userLabel) {
+  document.getElementById("chatView").classList.add("open");
+  document.getElementById("landingScreen").style.display = "none";
+  buildLangRow();
+  scroll.innerHTML = "";
+  renderNode(nodeId, false);
+}
+function goHome() {
+  document.getElementById("chatView").classList.remove("open");
+  document.getElementById("landingScreen").style.display = "flex";
+}
+function restart() {
+  currentLang = "en"; plainMode = false;
+  buildLangRow();
+  document.getElementById("plainSwitch").classList.remove("on");
+  scroll.innerHTML = "";
+  renderNode("start", false);
+}
+
+function addMsg(text, cls) {
+  const d = document.createElement("div");
+  d.className = "msg " + cls + " anim-in";
+  d.textContent = text;
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addSuggestion(text) {
+  const d = document.createElement("div");
+  d.className = "suggestion-card anim-in";
+  d.innerHTML = '<span class="sg-icon">\u{1F4A1}</span><span class="sg-text">' + text + '</span>';
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addDelight(text) {
+  const d = document.createElement("div");
+  d.className = "delight-card anim-in";
+  d.innerHTML = '<span>\u{1F389}</span><span>' + text + '</span>';
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addPlanCard(p) {
+  const d = document.createElement("div");
+  d.className = "plan-card anim-in";
+  let html = '<div class="pl-title">' + p.title + '</div>';
+  p.items.forEach(item => { html += '<div class="pl-item"><span class="ck">\u2713</span><span>' + item + '</span></div>'; });
+  html += '<div class="pl-meta"><div class="pl-meta-item"><div class="k">Estimated Time</div><div class="v">' + p.time + '</div></div><div class="pl-meta-item"><div class="k">Estimated Cost</div><div class="v">' + p.cost + '</div></div></div>';
+  d.innerHTML = html;
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addPriceCard(p) {
+  const d = document.createElement("div");
+  d.className = "price-card anim-in";
+  let html = '<div class="pc-title">' + p.title + '</div>';
+  p.rows.forEach(([label, val]) => { html += '<div class="pc-row"><span>' + label + '</span><span>' + val + '</span></div>'; });
+  html += '<div class="pc-total"><span>Total</span><span>' + p.total + '</span></div>';
+  html += '<div class="pc-note">' + p.note + '</div>';
+  d.innerHTML = html;
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addTimelineCard(t) {
+  const d = document.createElement("div");
+  d.className = "timeline-card anim-in";
+  let html = '<div class="tl-title">' + t.title + '</div>';
+  t.steps.forEach(([label, time, done], i) => {
+    const isActive = done && (i === t.steps.filter(s=>s[2]).length - 1);
+    html += '<div class="tl-row ' + (done ? 'done' : '') + (isActive ? ' active' : '') + '"><div class="tl-dot"></div><div class="tl-content"><div class="tl-label">' + label + '</div>' + (time ? '<div class="tl-time">' + time + '</div>' : '') + '</div></div>';
+  });
+  d.innerHTML = html;
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+let mapCount = 0;
+function addMapCard() {
+  mapCount++;
+  const etaId = "etaText" + mapCount;
+  const d = document.createElement("div");
+  d.className = "map-card anim-in";
+  d.innerHTML = '<div class="map-label">Live Map <span class="sim-badge">Simulated</span></div><div class="eta" id="' + etaId + '">ETA 24 min</div>' +
+    '<svg viewBox="0 0 360 160" width="100%" height="140"><rect width="360" height="160" fill="#EEF1F6"/>' +
+    '<path id="mapPath' + mapCount + '" d="M20 130 Q 100 40 180 80 T 340 30" stroke="#0A2A97" stroke-width="3" fill="none" stroke-dasharray="6,5"/>' +
+    '<circle cx="20" cy="130" r="7" fill="#38E500"/><circle cx="340" cy="30" r="7" fill="#0A2A97"/>' +
+    '<circle r="8" fill="#0A2A97" stroke="white" stroke-width="2"><animateMotion dur="7s" repeatCount="indefinite" path="M20 130 Q 100 40 180 80 T 340 30"/></circle>' +
+    '</svg>';
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+  const etaSteps = ["ETA 24 min", "ETA 21 min", "ETA 19 min"];
+  let step = 0;
+  const etaTimer = setInterval(() => {
+    step++;
+    const el = document.getElementById(etaId);
+    if (!el || step >= etaSteps.length) { clearInterval(etaTimer); return; }
+    el.textContent = etaSteps[step];
+  }, 3200);
+}
+function addComingSoon(c) {
+  const d = document.createElement("div");
+  d.className = "plan-card anim-in";
+  d.style.borderStyle = "dashed";
+  let html = '<div class="pl-title" style="color:#9A5B13;">' + c.title + ' \u2014 Coming Soon</div>';
+  c.items.forEach(item => { html += '<div class="pl-item"><span class="ck" style="background:#E4E7EC;color:#9AA0AB;">\u25CB</span><span>' + item + '</span></div>'; });
+  html += '<div class="pc-note" style="margin-top:10px;">' + c.note + '</div>';
+  d.innerHTML = html;
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function addRunnerCard(r) {
+  const d = document.createElement("div");
+  d.className = "runner-card anim-in";
+  const initials = r.name.split(' ').map(w=>w[0]).join('');
+  d.innerHTML = '<div class="runner-avatar illustrated">' + initials + '</div>' +
+    '<div class="runner-info"><div class="r-name">' + r.name + (r.verified ? ' <span class="badge">\u2713 Verified</span>' : '') + '</div>' +
+    '<div class="r-meta">\u2605 ' + r.rating + ' \u00b7 ' + r.vehicle + '</div>' +
+    '<div class="runner-meta-row"><span class="rm-item">' + (r.completed || '340+') + ' errands completed</span><span class="rm-item"><span class="runner-live-dot"></span>' + (r.distance || '1.8km away') + '</span></div></div>' +
+    '<div class="runner-actions"><div class="r-btn">\u{1F4DE}</div><div class="r-btn">\u{1F4AC}</div></div>';
+  scroll.appendChild(d);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+const thinkingPhrases = ["Understanding your request\u2026", "Checking nearby stores\u2026", "Optimising the route\u2026", "Bundling errands\u2026", "Calculating price\u2026"];
+function addTyping(phrases) {
+  const d = document.createElement("div");
+  d.className = "msg bot typing anim-in"; d.id = "typingDot";
+  d.innerHTML = "<span></span><span></span><span></span>";
+  scroll.appendChild(d);
+  const list = phrases || thinkingPhrases;
+  const tt = document.createElement("div");
+  tt.className = "thinking-text"; tt.id = "thinkingText";
+  scroll.appendChild(tt);
+  let i = 0;
+  tt.textContent = list[0];
+  const timer = setInterval(() => { i = (i + 1) % list.length; if (document.getElementById("thinkingText")) tt.textContent = list[i]; else clearInterval(timer); }, 480);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+function removeTyping() {
+  const t = document.getElementById("typingDot"); if (t) t.remove();
+  const tt = document.getElementById("thinkingText"); if (tt) tt.remove();
+}
+
+function playAutoDemo() {
+  document.getElementById("chatView").classList.add("open");
+  document.getElementById("landingScreen").style.display = "none";
+  currentLang = "en"; buildLangRow();
+  scroll.innerHTML = ""; optionsEl.innerHTML = "";
+  renderStageTrack(0);
+
+  addMsg("Pick up my prescription, buy groceries for dinner, and deliver everything before 6pm.", "user");
+  addTyping(["Understanding your request\u2026", "That's three separate stops\u2026"]);
+
+  setTimeout(() => {
+    removeTyping();
+    renderStageTrack(1);
+    addMsg("Got it \u2014 three stops. Here's the plan:", "bot");
+    addPlanCard({ title: "Execution Plan", items: ["Pick up prescription", "Groceries for dinner", "Deliver everything by 6pm"], time: "1 hr 10 min", cost: "\u20a67,800" });
+
+    setTimeout(() => {
+      addTyping(["Checking nearby stores\u2026", "Optimising the route\u2026", "Bundling errands\u2026"]);
+      setTimeout(() => {
+        removeTyping();
+        renderStageTrack(2);
+        addDelight("Bundling all three into one run saves you \u20a61,300 versus booking separately.");
+
+        setTimeout(() => {
+          addTyping(["Calculating price\u2026"]);
+          setTimeout(() => {
+            removeTyping();
+            renderStageTrack(3);
+            addPriceCard({ title: "Standard Delivery (bundled)", rows: [["Items (estimated)", "\u20a66,000"], ["Delivery fee (bundled)", "\u20a61,800"]], total: "\u20a67,800", note: "One delivery fee for all three stops \u2014 nothing charged until you confirm." });
+
+            setTimeout(() => {
+              renderStageTrack(4);
+              addMsg("Dispatching now \u2014 here's who's got it.", "bot");
+              addRunnerCard({ name: "Tayo A.", rating: "4.9", vehicle: "SY-SM E-Bike", verified: true, completed: "512", distance: "0.9km away" });
+              addTimelineCard({ title: "Live Order Timeline", steps: [["Order Confirmed","Just now",true],["Runner Assigned","Just now",true],["Runner En Route","",false],["Pickup Complete","",false],["On the Way","",false],["Delivered","",false]] });
+              addMapCard();
+              renderStageTrack(6);
+              const btn = document.createElement("button");
+              btn.className = "opt-btn";
+              btn.textContent = "Try it yourself \u2192";
+              btn.onclick = () => restart();
+              optionsEl.appendChild(btn);
+            }, 1500);
+          }, 1300);
+        }, 900);
+      }, 1700);
+    }, 1100);
+  }, 2100);
+}
+
+function runSequence(steps) {
+  let t = 0;
+  steps.forEach(step => { setTimeout(step.fn, t); t += step.delay; });
+}
+
+function playInvestorMode() {
+  document.getElementById("chatView").classList.add("open");
+  document.getElementById("landingScreen").style.display = "none";
+  currentLang = "en"; buildLangRow();
+  scroll.innerHTML = ""; optionsEl.innerHTML = "";
+  renderStageTrack(0);
+
+  runSequence([
+    { fn: () => { addMsg("Investor walkthrough \u2014 three real scenarios, back to back. No clicking needed.", "bot"); }, delay: 1600 },
+
+    // Scenario 1: multi-stop bundling
+    { fn: () => { addMsg("Pick up my prescription, buy groceries for dinner, and deliver everything before 6pm.", "user"); addTyping(["Understanding your request\u2026"]); }, delay: 1600 },
+    { fn: () => { removeTyping(); renderStageTrack(1); addPlanCard({ title: "Execution Plan", items: ["Pick up prescription", "Groceries for dinner", "Deliver by 6pm"], time: "1 hr 10 min", cost: "\u20a67,800" }); }, delay: 1600 },
+    { fn: () => { renderStageTrack(2); addDelight("Bundling all three saves you \u20a61,300 versus booking separately."); }, delay: 1700 },
+    { fn: () => { renderStageTrack(4); addRunnerCard({ name: "Tayo A.", rating: "4.9", vehicle: "SY-SM E-Bike", verified: true, completed: "512", distance: "0.9km away" }); addMapCard(); }, delay: 2400 },
+
+    // Transition
+    { fn: () => { renderStageTrack(0); addMsg("Now something urgent \u2014", "bot"); }, delay: 1600 },
+
+    // Scenario 2: emergency
+    { fn: () => { addMsg("I left my passport at work \u2014 I need it urgently.", "user"); addTyping(["Checking runner availability\u2026"]); }, delay: 1600 },
+    { fn: () => { removeTyping(); renderStageTrack(4); addMsg("Prioritising this over routine deliveries \u2014 nearest runner is 6 minutes away.", "bot"); addPriceCard({ title: "Priority Delivery", rows: [["Retrieval + delivery", "\u20a62,500"], ["Priority fee", "\u20a61,500"]], total: "\u20a64,000", note: "Priority pricing reflects genuine urgency, not a markup for panic." }); }, delay: 2400 },
+
+    // Transition
+    { fn: () => { renderStageTrack(0); addMsg("And for things you need every week \u2014", "bot"); }, delay: 1600 },
+
+    // Scenario 3: recurring
+    { fn: () => { addMsg("Schedule my laundry pickup every Friday at 5pm.", "user"); addTyping(["Setting up the schedule\u2026"]); }, delay: 1600 },
+    { fn: () => { removeTyping(); renderStageTrack(1); addPlanCard({ title: "Recurring Schedule", items: ["Laundry pickup, every Friday", "5:00pm collection window", "Cancel or adjust anytime"], time: "Weekly", cost: "\u20a61,800/pickup" }); renderStageTrack(6); }, delay: 2200 },
+
+    { fn: () => {
+        addMsg("That's the range \u2014 one-off bundled errands, urgent retrievals, and standing weekly schedules, all through one conversation.", "bot");
+        const btn = document.createElement("button");
+        btn.className = "opt-btn";
+        btn.textContent = "Try it yourself \u2192";
+        btn.onclick = () => restart();
+        optionsEl.appendChild(btn);
+      }, delay: 0 },
+  ]);
+}
+
+function renderNode(nodeId, showUserMsg, userLabel) {
+  const node = getNode(nodeId);
+  if (showUserMsg) addMsg(userLabel, "user");
+  optionsEl.innerHTML = "";
+  renderStageTrack(node.stage);
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    (node.bot || []).forEach(line => addMsg(line, "bot"));
+    if (node.suggestion) addSuggestion(node.suggestion);
+    if (node.delight) addDelight(node.delight);
+    if (node.comingSoon) addComingSoon(node.comingSoon);
+    if (node.plan) addPlanCard(node.plan);
+    if (node.price) addPriceCard(node.price);
+    if (node.timeline) addTimelineCard(node.timeline);
+    if (node.map) addMapCard();
+    if (node.runner) addRunnerCard(node.runner);
+    node.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "opt-btn" + (opt.next === "escalate" ? " escalate" : "");
+      btn.textContent = opt.label;
+      btn.onclick = () => {
+        if (opt.forceLang) { currentLang = opt.forceLang; buildLangRow(); }
+        renderNode(opt.next, true, opt.label);
+      };
+      optionsEl.appendChild(btn);
+    });
+  }, 500);
+}
+</script>
+</body>
+</html>
